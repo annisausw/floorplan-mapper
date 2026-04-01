@@ -1,0 +1,387 @@
+[
+  {
+    "id": "LT2-MainEntrance",
+    "label": "Main Entrance",
+    "category": "CIRCULATION",
+    "aliases": "pintu utama, pintu masuk, lobi depan, masuk rumah sakit, main door, entrance",
+    "description": "Pintu masuk utama rumah sakit"
+  },
+  {
+    "id": "LT2-ENTTHTGeneral",
+    "label": "ENT / THT & General",
+    "category": "CLINIC",
+    "aliases": "dokter tht, telinga hidung tenggorokan, poli tht, dokter umum, poli umum, general clinic",
+    "description": "Klinik konsultasi spesialis THT dan Dokter Umum"
+  },
+  {
+    "id": "LT2-ObgynConsultRoom",
+    "label": "Obgyn Consult Room",
+    "category": "CLINIC",
+    "aliases": "dokter kandungan, obgyn, ibu hamil, kehamilan, poli kandungan, poli kebidanan, spesialis kandungan",
+    "description": "Ruang konsultasi dokter spesialis kebidanan dan kandungan (Obgyn)"
+  },
+  {
+    "id": "LT2-Surgical",
+    "label": "Surgical",
+    "category": "CLINIC",
+    "aliases": "bedah, dokter bedah, poli bedah, operasi kecil, tindakan bedah, surgeon",
+    "description": "Ruang tindakan medis dan konsultasi spesialis bedah"
+  },
+  {
+    "id": "LT2-WaitingAreaPaediatrics",
+    "label": "Waiting Area Paediatrics",
+    "category": "PUBLIC",
+    "aliases": "ruang tunggu anak, tunggu poli anak, tempat main anak, waiting room anak",
+    "description": "Area tunggu khusus untuk keluarga dan pasien anak (Paediatrics)"
+  },
+  {
+    "id": "LT2-PaediatricsConsultandTreatment",
+    "label": "Paediatrics Consult and Treatment",
+    "category": "CLINIC",
+    "aliases": "dokter anak, poli anak, klinik anak, periksa anak, bayi, pediatrik, pediatrician",
+    "description": "Ruang konsultasi dan perawatan kesehatan khusus anak"
+  },
+  {
+    "id": "LT2-DentalEyesConsultandTreatmentRoom",
+    "label": "Dental & Eyes Consult and Treatment Room",
+    "category": "CLINIC",
+    "aliases": "dokter gigi, poli gigi, dokter mata, poli mata, cabut gigi, periksa mata, katarak, kedokteran gigi",
+    "description": "Klinik gabungan untuk konsultasi dan perawatan spesialis gigi dan mata"
+  },
+  {
+    "id": "LT2-ECGConsultRoom",
+    "label": "ECG Consult Room",
+    "category": "CLINIC",
+    "aliases": "ekg, rekam jantung, periksa jantung, tes jantung, ecg, electrocardiogram",
+    "description": "Ruang pemeriksaan dan tes rekam jantung (EKG)"
+  },
+  {
+    "id": "LT2-XRayImaging",
+    "label": "X-Ray & Imaging",
+    "category": "CLINIC",
+    "aliases": "rontgen, x-ray, radiologi, imaging, foto tulang, ronsen",
+    "description": "Pusat pelayanan radiologi dan pengambilan gambar medis (X-Ray)"
+  },
+  {
+    "id": "LT2-BostonPharmacy",
+    "label": "Boston Pharmacy",
+    "category": "PHARMACY",
+    "aliases": "apotek boston, toko obat boston, beli obat, farmasi boston, boston health",
+    "description": "Toko ritel kesehatan dan obat-obatan farmasi Boston"
+  },
+  {
+    "id": "LT2-InRegistration",
+    "label": "In Registration",
+    "category": "ADMIN",
+    "aliases": "pendaftaran, registrasi, daftar rawat inap, admission, daftar pasien, loket daftar",
+    "description": "Meja layanan pendaftaran pasien dan administrasi medis"
+  },
+  {
+    "id": "LT2-Cashier",
+    "label": "Cashier",
+    "category": "ADMIN",
+    "aliases": "kasir, bayar, pembayaran, tagihan, bill, payment",
+    "description": "Loket kasir untuk administrasi pembayaran tagihan medis"
+  },
+  {
+    "id": "LT2-AccidentandEmergency",
+    "label": "Accident and Emergency",
+    "category": "EMERGENCY",
+    "aliases": "ugd, igd, gawat darurat, emergency, kecelakaan, darurat, ambulans",
+    "description": "Instalasi Gawat Darurat (IGD) untuk penanganan medis segera"
+  },
+  {
+    "id": "LT2-GammaKnife",
+    "label": "Gamma Knife",
+    "category": "CLINIC",
+    "aliases": "gamma knife, radiasi otak, bedah saraf, tumor otak, bedah gamma",
+    "description": "Ruang tindakan eksaminasi dan bedah saraf menggunakan teknologi Gamma Knife"
+  },
+  {
+    "id": "LT2-MRI3T",
+    "label": "MRI 3T",
+    "category": "CLINIC",
+    "aliases": "mri 3t, scan mri, mri scan, periksa mri, radiologi mri",
+    "description": "Ruang pemeriksaan pencitraan medis menggunakan mesin MRI 3 Tesla"
+  },
+  {
+    "id": "LT2-WaitingCTArea",
+    "label": "Waiting CT Area",
+    "category": "PUBLIC",
+    "aliases": "tunggu ct scan, ruang tunggu ct, tunggu radiologi",
+    "description": "Area tunggu untuk pasien yang akan melakukan pemeriksaan CT Scan"
+  },
+  {
+    "id": "LT2-LiftMainLobby",
+    "label": "Lift Main Lobby",
+    "category": "CIRCULATION",
+    "aliases": "lift utama, lift lobi, lift depan, elevator, naik, turun",
+    "description": "Lift penumpang utama yang berada di area Main Lobby"
+  },
+  {
+    "id": "LT2-BedLiftLobby",
+    "label": "Bed Lift Lobby",
+    "category": "CIRCULATION",
+    "aliases": "lift ranjang, lift pasien, bed lift, lift barang, lift bed",
+    "description": "Area lift khusus untuk membawa ranjang pasien (Bed Lift)"
+  },
+  {
+    "id": "LT2-MandarinKitchenRice",
+    "label": "Mandarin Kitchen Rice",
+    "category": "PUBLIC",
+    "aliases": "restoran mandarin, tempat makan, kantin, cafe, food court, makan, minum",
+    "description": "Restoran Mandarin Kitchen Rice untuk pasien dan pengunjung"
+  },
+  {
+    "id": "LT2-Toilet",
+    "label": "Toilet",
+    "category": "TOILET",
+    "aliases": "toilet, wc, kamar mandi, buang air, cuci tangan, restroom, washroom, lavatory",
+    "description": "Fasilitas toilet dan kamar mandi untuk pengunjung atau pasien"
+  },
+  {
+    "id": "LT2-Stair",
+    "label": "Stair",
+    "category": "CIRCULATION",
+    "aliases": "tangga, tangga darurat, stair, turun, naik, tangga",
+    "description": "Fasilitas tangga akses antar lantai"
+  },
+  {
+    "id": "LT2-NOBUBank",
+    "label": "NOBU Bank",
+    "category": "SERVICE",
+    "aliases": "bank nobu, atm nobu, tarik tunai, perbankan, bank",
+    "description": "Layanan perbankan dan fasilitas perbankan dari Bank NOBU"
+  },
+  {
+    "id": "LT2-DrLounge",
+    "label": "Dr. Lounge",
+    "category": "SERVICE",
+    "aliases": "ruang istirahat dokter, lounge dokter, doctor lounge, ruang dokter",
+    "description": "Ruang lounge dan istirahat eksklusif khusus untuk para dokter"
+  },
+  {
+    "id": "LT2-PharmacyFarmasi",
+    "label": "Pharmacy / Farmasi",
+    "category": "PHARMACY",
+    "aliases": "apotek, farmasi, tebus resep, ambil obat, beli obat, apotik",
+    "description": "Fasilitas pelayanan farmasi untuk penebusan dan pengambilan obat"
+  },
+  {
+    "id": "LT2-Toilet-2",
+    "label": "Toilet",
+    "category": "TOILET",
+    "aliases": "toilet, wc, kamar mandi, buang air, cuci tangan, restroom, washroom, lavatory",
+    "description": "Fasilitas toilet dan kamar mandi untuk pengunjung atau pasien"
+  },
+  {
+    "id": "LT2-Stair-2",
+    "label": "Stair",
+    "category": "CIRCULATION",
+    "aliases": "tangga, tangga darurat, stair, turun, naik, tangga",
+    "description": "Fasilitas tangga akses antar lantai"
+  },
+  {
+    "id": "LT2-Shop1",
+    "label": "Shop 1",
+    "category": "SERVICE",
+    "aliases": "toko 1, minimarket, warung, shop 1, beli barang",
+    "description": "Toko ritel 1 yang menyediakan berbagai kebutuhan pengunjung"
+  },
+  {
+    "id": "LT2-Shop2",
+    "label": "Shop 2",
+    "category": "SERVICE",
+    "aliases": "toko 2, minimarket, warung, shop 2, beli barang",
+    "description": "Toko ritel 2 yang menyediakan berbagai kebutuhan pengunjung"
+  },
+  {
+    "id": "LT2-MRI15T",
+    "label": "MRI 1.5T",
+    "category": "CLINIC",
+    "aliases": "mri 1.5t, scan mri, mri scan, periksa mri, radiologi mri",
+    "description": "Ruang pemeriksaan pencitraan medis menggunakan mesin MRI 1.5 Tesla"
+  },
+  {
+    "id": "LT2-CTScan",
+    "label": "CT Scan",
+    "category": "CLINIC",
+    "aliases": "ct scan, periksa ct, scan kepala, ct-scan",
+    "description": "Ruang pemeriksaan radiologi menggunakan mesin pemindai CT Scan"
+  },
+  {
+    "id": "LT2-Fluoroscopy",
+    "label": "Fluoroscopy",
+    "category": "CLINIC",
+    "aliases": "fluoroskopi, fluoroscopy, rontgen gerak, x-ray dinamis",
+    "description": "Ruang pemeriksaan pencitraan sinar-X dinamis atau bergerak (Fluoroskopi)"
+  },
+  {
+    "id": "LT2-room130",
+    "label": "room 130",
+    "category": "SERVICE",
+    "aliases": "ruang 130, kamar 130",
+    "description": "Ruang 130"
+  },
+  {
+    "id": "LT2-LVU",
+    "label": "LVU",
+    "category": "CLINIC",
+    "aliases": "lvu, lab vaskular",
+    "description": "Ruang tindakan dan pemeriksaan medis LVU"
+  },
+  {
+    "id": "LT2-UltraSound",
+    "label": "Ultra Sound",
+    "category": "CLINIC",
+    "aliases": "ultrasound, usg, ultrasonografi, cek usg, cek kandungan",
+    "description": "Ruang pemeriksaan medis menggunakan teknologi Ultra Sound (USG)"
+  },
+  {
+    "id": "LT2-Resuss",
+    "label": "Resuss",
+    "category": "EMERGENCY",
+    "aliases": "resusitasi, resuss, gawat darurat, ruang resusitasi, darurat, cpr",
+    "description": "Ruang resusitasi untuk penanganan darurat pasien kritis"
+  },
+  {
+    "id": "LT2-EntryAccidentEmergency",
+    "label": "Entry Accident & Emergency",
+    "category": "CIRCULATION",
+    "aliases": "pintu igd, masuk ugd, pintu darurat, pintu emergency",
+    "description": "Akses pintu masuk khusus menuju Instalasi Gawat Darurat (IGD)"
+  },
+  {
+    "id": "LT2-WaitingAreaEmergency",
+    "label": "Waiting Area Emergency",
+    "category": "PUBLIC",
+    "aliases": "ruang tunggu igd, tunggu ugd, ruang tunggu darurat, waiting room emergency",
+    "description": "Area tunggu bagi keluarga dan pengantar pasien di ruang IGD"
+  },
+  {
+    "id": "LT2-CounterRadiology",
+    "label": "Counter Radiology",
+    "category": "ADMIN",
+    "aliases": "konter radiologi, daftar radiologi, meja rontgen, pendaftaran radiologi",
+    "description": "Meja layanan informasi dan pendaftaran untuk pasien radiologi"
+  },
+  {
+    "id": "LT2-EEGEyeClinic",
+    "label": "EEG Eye Clinic",
+    "category": "CLINIC",
+    "aliases": "eeg, rekam otak mata, cek saraf mata, eeg mata",
+    "description": "Ruang pemeriksaan Electroencephalography (EEG) pada Klinik Mata"
+  },
+  {
+    "id": "LT2-DieticianEyeClinic",
+    "label": "Dietician Eye Clinic",
+    "category": "CLINIC",
+    "aliases": "ahli gizi, dietician, gizi mata, konsultasi gizi, ahli diet",
+    "description": "Ruang konsultasi kesehatan dan spesialis ahli gizi (Dietician) Klinik Mata"
+  },
+  {
+    "id": "LT2-NurseStation",
+    "label": "Nurse Station",
+    "category": "CLINIC",
+    "aliases": "pos perawat, suster jaga, nurse station radiologi, tempat suster",
+    "description": "Pos jaga dan stasiun kerja perawat di area radiologi"
+  },
+  {
+    "id": "LT2-Stair-3",
+    "label": "Stair",
+    "category": "CIRCULATION",
+    "aliases": "tangga, tangga darurat, stair, turun, naik, tangga",
+    "description": "Fasilitas tangga akses antar lantai"
+  },
+  {
+    "id": "LT2-Toilet-3",
+    "label": "Toilet",
+    "category": "TOILET",
+    "aliases": "toilet, wc, kamar mandi, buang air, cuci tangan, restroom, washroom, lavatory",
+    "description": "Fasilitas toilet dan kamar mandi untuk pengunjung atau pasien"
+  },
+  {
+    "id": "LT2-Optic2",
+    "label": "Optic 2",
+    "category": "SERVICE",
+    "aliases": "optik 2, toko kacamata 2, beli kacamata, periksa mata optik",
+    "description": "Toko optik dan layanan kacamata (Cabang 2)"
+  },
+  {
+    "id": "LT2-Ruangkonsultasiumum",
+    "label": "Ruang konsultasi umum",
+    "category": "CLINIC",
+    "aliases": "poli umum, dokter umum, general clinic, periksa dokter",
+    "description": "Ruang klinik untuk pemeriksaan dan konsultasi dokter umum"
+  },
+  {
+    "id": "LT2-Optic1",
+    "label": "Optic 1",
+    "category": "SERVICE",
+    "aliases": "optik 1, toko kacamata 1, beli kacamata, periksa mata optik",
+    "description": "Toko optik dan layanan kacamata (Cabang 1)"
+  },
+  {
+    "id": "LT2-Toilet-4",
+    "label": "Toilet",
+    "category": "TOILET",
+    "aliases": "toilet, wc, kamar mandi, buang air, cuci tangan, restroom, washroom, lavatory",
+    "description": "Fasilitas toilet dan kamar mandi untuk pengunjung atau pasien"
+  },
+  {
+    "id": "LT2-RuangMenyusui",
+    "label": "Ruang Menyusui",
+    "category": "PUBLIC",
+    "aliases": "ruang menyusui, laktasi, nursery room, ibu menyusui, asi, pumping",
+    "description": "Fasilitas laktasi atau ruang menyusui yang nyaman untuk ibu dan bayi"
+  },
+  {
+    "id": "LT2-WaitingAreaEmergency-2",
+    "label": "Waiting Area Emergency",
+    "category": "PUBLIC",
+    "aliases": "tunggu igd, tunggu ugd, tunggu emergency",
+    "description": "Ruang tunggu tambahan di area Accident and Emergency"
+  },
+  {
+    "id": "LT2-KitchenServery",
+    "label": "Kitchen & Servery",
+    "category": "SERVICE",
+    "aliases": "dapur, kitchen, servery, ruang masak",
+    "description": "Area dapur utama dan layanan penyajian makanan (Servery) rumah sakit"
+  },
+  {
+    "id": "LT2-room151",
+    "label": "room 151",
+    "category": "SERVICE",
+    "aliases": "ruang 151, kamar 151",
+    "description": "Ruang 151"
+  },
+  {
+    "id": "LT2-Lounge",
+    "label": "Lounge",
+    "category": "PUBLIC",
+    "aliases": "lounge, ruang tunggu nyaman, sofa, tempat duduk, lobi santai",
+    "description": "Area tunggu lounge VIP dengan sofa yang nyaman untuk pengunjung"
+  },
+  {
+    "id": "LT2-Mammography",
+    "label": "Mammography",
+    "category": "CLINIC",
+    "aliases": "mamografi, mammography, rontgen payudara, periksa payudara, kanker payudara",
+    "description": "Ruang layanan prosedur medis rontgen payudara (Mammography)"
+  },
+  {
+    "id": "LT2-Kecantikan",
+    "label": "Kecantikan",
+    "category": "CLINIC",
+    "aliases": "klinik kecantikan, dokter kulit, beauty clinic, estetika, perawatan wajah, skincare",
+    "description": "Klinik spesialis layanan perawatan kecantikan dan estetika medis"
+  },
+  {
+    "id": "LT2-Toilet-4",
+    "label": "Toilet",
+    "category": "TOILET",
+    "aliases": "toilet, wc, kamar mandi, buang air, cuci tangan, restroom, washroom, lavatory",
+    "description": "Fasilitas toilet dan kamar mandi untuk pengunjung atau pasien"
+  }
+]

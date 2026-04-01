@@ -1,0 +1,184 @@
+[
+  {
+    "id": "LT1-PharmacyFarmasi",
+    "label": "Pharmacy / Farmasi",
+    "category": "PHARMACY",
+    "aliases": "apotek, farmasi, tebus resep, beli obat, ambil obat, apotik",
+    "description": "Fasilitas pelayanan farmasi dan pengambilan obat"
+  },
+  {
+    "id": "LT1-TherapyWard",
+    "label": "Therapy Ward",
+    "category": "CLINIC",
+    "aliases": "bangsal terapi, ruang terapi, rawat terapi, ward terapi, kamar terapi",
+    "description": "Bangsal atau ruang perawatan khusus untuk pasien terapi"
+  },
+  {
+    "id": "LT1-MedicalRehab",
+    "label": "Medical Rehab",
+    "category": "CLINIC",
+    "aliases": "rehab medik, rehabilitasi medis, fisioterapi, terapi fisik, ruang rehab",
+    "description": "Pusat fasilitas pelayanan rehabilitasi medis dan fisioterapi"
+  },
+  {
+    "id": "LT1-Terrace",
+    "label": "Terrace",
+    "category": "PUBLIC",
+    "aliases": "teras, area terbuka, luar ruangan, balkon, outdoor, tempat santai",
+    "description": "Teras atau area terbuka luar ruangan untuk pengunjung"
+  },
+  {
+    "id": "LT1-Terrace-2",
+    "label": "Terrace",
+    "category": "PUBLIC",
+    "aliases": "teras, area terbuka, luar ruangan, balkon, outdoor, tempat santai",
+    "description": "Teras atau area terbuka luar ruangan untuk pengunjung"
+  },
+  {
+    "id": "LT1-AdmissionMedicalRehab",
+    "label": "Admission Medical Rehab",
+    "category": "ADMIN",
+    "aliases": "pendaftaran rehab, daftar fisioterapi, registrasi rehab, loket rehab medik, daftar medik",
+    "description": "Meja layanan pendaftaran dan administrasi khusus pasien rehabilitasi medis"
+  },
+  {
+    "id": "LT1-VitalstimTherapy",
+    "label": "Vitalstim Therapy",
+    "category": "CLINIC",
+    "aliases": "terapi vitalstim, terapi otot, stimulasi otot, vitalstim, fisioterapi otot",
+    "description": "Ruang tindakan medis untuk terapi stimulasi otot (Vitalstim)"
+  },
+  {
+    "id": "LT1-VIPTherapy",
+    "label": "VIP Therapy",
+    "category": "CLINIC",
+    "aliases": "terapi vip, ruang terapi vip, fisioterapi vip, rehab vip, terapi eksklusif",
+    "description": "Ruang layanan terapi fisik dan rehabilitasi eksklusif untuk pasien VIP"
+  },
+  {
+    "id": "LT1-SensoryIntegration",
+    "label": "Sensory Integration",
+    "category": "CLINIC",
+    "aliases": "integrasi sensori, terapi sensori, terapi anak, sensorik, motorik anak",
+    "description": "Ruang terapi integrasi sensori, umumnya untuk mendukung perkembangan anak"
+  },
+  {
+    "id": "LT1-OccupasionalTherapy",
+    "label": "Occupasional Therapy",
+    "category": "CLINIC",
+    "aliases": "terapi okupasi, okupasi, latihan motorik, occupational, occupational therapy",
+    "description": "Ruang tindakan untuk layanan pemulihan dan terapi okupasi"
+  },
+  {
+    "id": "LT1-SpeechOccupasionalTherapy",
+    "label": "Speech / Occupasional Therapy",
+    "category": "CLINIC",
+    "aliases": "terapi wicara, terapi okupasi, bicara, motorik, speech, occupational, poli wicara",
+    "description": "Ruang layanan gabungan untuk terapi wicara dan terapi okupasi"
+  },
+  {
+    "id": "LT1-SpeechTherapy",
+    "label": "Speech Therapy",
+    "category": "CLINIC",
+    "aliases": "terapi wicara, latihan bicara, poli wicara, speech clinic, terapi ngomong",
+    "description": "Ruang khusus untuk tindakan medis terapi wicara"
+  },
+  {
+    "id": "LT1-NebulizerRoom",
+    "label": "Nebulizer Room",
+    "category": "CLINIC",
+    "aliases": "ruang uap, nebulizer, terapi uap, asma, sesak napas, inhalasi",
+    "description": "Ruang perawatan terapi uap (Nebulizer) untuk penanganan gangguan pernapasan"
+  },
+  {
+    "id": "LT1-OP",
+    "label": "OP",
+    "category": "CLINIC",
+    "aliases": "op, operasi kecil, outpatient, rawat jalan, tindakan op",
+    "description": "Ruang tindakan Outpatient (OP) atau tindakan operasi kecil rawat jalan"
+  },
+  {
+    "id": "LT1-CU",
+    "label": "CU",
+    "category": "CLINIC",
+    "aliases": "cu, ruang cu, care unit, unit perawatan",
+    "description": "Ruang perawatan dan observasi CU (Care Unit)"
+  },
+  {
+    "id": "LT1-Stair",
+    "label": "Stair",
+    "category": "CIRCULATION",
+    "aliases": "tangga, tangga darurat, stair, turun, naik, tangga",
+    "description": "Fasilitas tangga akses antar lantai"
+  },
+  {
+    "id": "LT1-Mushola",
+    "label": "Mushola",
+    "category": "PUBLIC",
+    "aliases": "mushola, masjid, ruang sholat, ibadah, shalat, pray room, musholla",
+    "description": "Fasilitas ibadah (Mushola) untuk pengunjung dan staf rumah sakit"
+  },
+  {
+    "id": "LT1-Toilet",
+    "label": "Toilet",
+    "category": "TOILET",
+    "aliases": "toilet rehab, wc rehab, kamar mandi, restroom, washroom, lavatory",
+    "description": "Fasilitas toilet pengunjung yang terletak di dekat area Medical Rehab"
+  },
+  {
+    "id": "LT1-BedLiftLobby",
+    "label": "Bed Lift Lobby",
+    "category": "CIRCULATION",
+    "aliases": "lift ranjang, lift pasien, bed lift, lift barang, tunggu lift, elevator ranjang",
+    "description": "Area tunggu lift khusus untuk transportasi ranjang pasien (Bed Lift)"
+  },
+  {
+    "id": "LT1-Koperasi",
+    "label": "Koperasi",
+    "category": "SERVICE",
+    "aliases": "minimarket, toko, beli barang, warung, koperasi karyawan, mart",
+    "description": "Koperasi yang menyediakan berbagai kebutuhan belanja di lobi utama"
+  },
+  {
+    "id": "LT1-LiftMainLobby",
+    "label": "Lift Main Lobby",
+    "category": "CIRCULATION",
+    "aliases": "lift utama, lift lobi, lift depan, elevator, naik, turun, passenger lift",
+    "description": "Lift penumpang utama yang berada di area Main Lobby"
+  },
+  {
+    "id": "LT1-Stair-2",
+    "label": "Stair",
+    "category": "CIRCULATION",
+    "aliases": "tangga, tangga darurat, stair, turun, naik, tangga",
+    "description": "Fasilitas tangga akses antar lantai"
+  },
+  {
+    "id": "LT1-Library",
+    "label": "Library",
+    "category": "PUBLIC",
+    "aliases": "perpustakaan, ruang baca, buku, baca buku, library, perpustakaan medis",
+    "description": "Fasilitas perpustakaan dan ruang baca"
+  },
+  {
+    "id": "LT1-PhotoCopy",
+    "label": "Photo Copy",
+    "category": "SERVICE",
+    "aliases": "fotokopi, fotocopy, print, cetak dokumen, copy center, fotocopy center",
+    "description": "Layanan jasa fotokopi dan cetak dokumen di lobi utama"
+  },
+  {
+    "id": "LT1-FemaleChangeRoom",
+    "label": "Female Change Room",
+    "category": "SERVICE",
+    "aliases": "ruang ganti wanita, ganti baju, loker wanita, fitting room, locker room",
+    "description": "Ruang ganti pakaian dan loker khusus untuk wanita atau staf medis"
+  },
+  {
+    "id": "LT1-Store2",
+    "label": "Store 2",
+    "category": "SERVICE",
+    "aliases": "gudang 2, ruang penyimpanan, storage 2, simpan barang, gudang internal",
+    "description": "Gudang atau ruang penyimpanan logistik internal 2"
+  }
+]

@@ -1,0 +1,722 @@
+[
+  {
+    "id": "j1",
+    "type": "junction",
+    "connection": [
+      "j2",
+      "j30",
+      "LT1-PhotoCopy"
+    ],
+    "cx": 659,
+    "cy": 403
+  },
+  {
+    "id": "j2",
+    "type": "junction",
+    "connection": [
+      "j1",
+      "j3"
+    ],
+    "cx": 640,
+    "cy": 406
+  },
+  {
+    "id": "j3",
+    "type": "junction",
+    "connection": [
+      "j2",
+      "j4",
+      "LT1-BedLiftLobby"
+    ],
+    "cx": 612,
+    "cy": 407
+  },
+  {
+    "id": "j4",
+    "type": "junction",
+    "connection": [
+      "j3",
+      "j5",
+      "j8"
+    ],
+    "cx": 583,
+    "cy": 407
+  },
+  {
+    "id": "j5",
+    "type": "junction",
+    "connection": [
+      "j4",
+      "j6"
+    ],
+    "cx": 582,
+    "cy": 434
+  },
+  {
+    "id": "j6",
+    "type": "junction",
+    "connection": [
+      "j5",
+      "j7"
+    ],
+    "cx": 581,
+    "cy": 461
+  },
+  {
+    "id": "j7",
+    "type": "junction",
+    "connection": [
+      "j6",
+      "j20",
+      "j27",
+      "LT1-Library"
+    ],
+    "cx": 583,
+    "cy": 488
+  },
+  {
+    "id": "j8",
+    "type": "junction",
+    "connection": [
+      "j4",
+      "j9",
+      "j19"
+    ],
+    "cx": 583,
+    "cy": 380
+  },
+  {
+    "id": "j9",
+    "type": "junction",
+    "connection": [
+      "j8",
+      "j10",
+      "LT1-PharmacyFarmasi"
+    ],
+    "cx": 585,
+    "cy": 354
+  },
+  {
+    "id": "j10",
+    "type": "junction",
+    "connection": [
+      "j9",
+      "j11",
+      "LT1-Toilet"
+    ],
+    "cx": 585,
+    "cy": 319
+  },
+  {
+    "id": "j11",
+    "type": "junction",
+    "connection": [
+      "j10",
+      "j12"
+    ],
+    "cx": 585,
+    "cy": 278
+  },
+  {
+    "id": "j12",
+    "type": "junction",
+    "connection": [
+      "j11",
+      "j13"
+    ],
+    "cx": 585,
+    "cy": 245
+  },
+  {
+    "id": "j13",
+    "type": "junction",
+    "connection": [
+      "j12",
+      "j14"
+    ],
+    "cx": 586,
+    "cy": 213
+  },
+  {
+    "id": "j14",
+    "type": "junction",
+    "connection": [
+      "j13",
+      "j15"
+    ],
+    "cx": 586,
+    "cy": 181
+  },
+  {
+    "id": "j15",
+    "type": "junction",
+    "connection": [
+      "j14",
+      "j16"
+    ],
+    "cx": 641,
+    "cy": 181
+  },
+  {
+    "id": "j16",
+    "type": "junction",
+    "connection": [
+      "j15",
+      "j17",
+      "LT1-Mushola"
+    ],
+    "cx": 642,
+    "cy": 122
+  },
+  {
+    "id": "j17",
+    "type": "junction",
+    "connection": [
+      "j16",
+      "LT1-Stair"
+    ],
+    "cx": 642,
+    "cy": 92
+  },
+  {
+    "id": "LT1-PharmacyFarmasi",
+    "type": "room",
+    "connection": [
+      "j9"
+    ],
+    "cx": 639,
+    "cy": 355
+  },
+  {
+    "id": "j19",
+    "type": "junction",
+    "connection": [
+      "j8",
+      "LT1-Stair-2"
+    ],
+    "cx": 551,
+    "cy": 382
+  },
+  {
+    "id": "j20",
+    "type": "junction",
+    "connection": [
+      "j7",
+      "j21",
+      "j63"
+    ],
+    "cx": 627,
+    "cy": 488
+  },
+  {
+    "id": "j21",
+    "type": "junction",
+    "connection": [
+      "j20",
+      "j22"
+    ],
+    "cx": 670,
+    "cy": 489
+  },
+  {
+    "id": "j22",
+    "type": "junction",
+    "connection": [
+      "j21",
+      "j23"
+    ],
+    "cx": 714,
+    "cy": 489
+  },
+  {
+    "id": "j23",
+    "type": "junction",
+    "connection": [
+      "j22",
+      "j24"
+    ],
+    "cx": 758,
+    "cy": 490
+  },
+  {
+    "id": "j24",
+    "type": "junction",
+    "connection": [
+      "j23",
+      "j25"
+    ],
+    "cx": 802,
+    "cy": 490
+  },
+  {
+    "id": "j25",
+    "type": "junction",
+    "connection": [
+      "j24",
+      "j26",
+      "j70"
+    ],
+    "cx": 832,
+    "cy": 491
+  },
+  {
+    "id": "j26",
+    "type": "junction",
+    "connection": [
+      "j25",
+      "v68",
+      "LT1-FemaleChangeRoom"
+    ],
+    "cx": 889,
+    "cy": 491
+  },
+  {
+    "id": "j27",
+    "type": "junction",
+    "connection": [
+      "j7",
+      "j28"
+    ],
+    "cx": 517,
+    "cy": 488
+  },
+  {
+    "id": "j28",
+    "type": "junction",
+    "connection": [
+      "j27",
+      "j29"
+    ],
+    "cx": 450,
+    "cy": 489
+  },
+  {
+    "id": "j29",
+    "type": "junction",
+    "connection": [
+      "j28"
+    ],
+    "cx": 384,
+    "cy": 489
+  },
+  {
+    "id": "j30",
+    "type": "junction",
+    "connection": [
+      "j1",
+      "j31"
+    ],
+    "cx": 662,
+    "cy": 382
+  },
+  {
+    "id": "j31",
+    "type": "junction",
+    "connection": [
+      "j30",
+      "j32"
+    ],
+    "cx": 752,
+    "cy": 379
+  },
+  {
+    "id": "j32",
+    "type": "junction",
+    "connection": [
+      "j31",
+      "j33",
+      "j55"
+    ],
+    "cx": 834,
+    "cy": 376
+  },
+  {
+    "id": "j33",
+    "type": "junction",
+    "connection": [
+      "j32",
+      "j34",
+      "LT1-OccupasionalTherapy",
+      "LT1-SpeechOccupasionalTherapy",
+      "LT1-SpeechTherapy"
+    ],
+    "cx": 833,
+    "cy": 325
+  },
+  {
+    "id": "j34",
+    "type": "junction",
+    "connection": [
+      "j33",
+      "j35",
+      "j44"
+    ],
+    "cx": 832,
+    "cy": 271
+  },
+  {
+    "id": "j35",
+    "type": "junction",
+    "connection": [
+      "j34",
+      "LT1-TherapyWard"
+    ],
+    "cx": 805,
+    "cy": 269
+  },
+  {
+    "id": "LT1-TherapyWard",
+    "type": "room",
+    "connection": [
+      "j35",
+      "j37",
+      "LT1-VitalstimTherapy",
+      "LT1-VIPTherapy"
+    ],
+    "cx": 805,
+    "cy": 238
+  },
+  {
+    "id": "j37",
+    "type": "junction",
+    "connection": [
+      "LT1-TherapyWard",
+      "j38"
+    ],
+    "cx": 805,
+    "cy": 193
+  },
+  {
+    "id": "j38",
+    "type": "junction",
+    "connection": [
+      "j37",
+      "j39"
+    ],
+    "cx": 806,
+    "cy": 123
+  },
+  {
+    "id": "j39",
+    "type": "junction",
+    "connection": [
+      "j38",
+      "LT1-MedicalRehab"
+    ],
+    "cx": 814,
+    "cy": 80
+  },
+  {
+    "id": "LT1-MedicalRehab",
+    "type": "room",
+    "connection": [
+      "j39",
+      "j41",
+      "LT1-Terrace",
+      "LT1-Terrace-2",
+      "LT1-AdmissionMedicalRehab",
+      "LT1-CU"
+    ],
+    "cx": 849,
+    "cy": 81
+  },
+  {
+    "id": "j41",
+    "type": "junction",
+    "connection": [
+      "LT1-MedicalRehab",
+      "j42"
+    ],
+    "cx": 849,
+    "cy": 129
+  },
+  {
+    "id": "j42",
+    "type": "junction",
+    "connection": [
+      "j41",
+      "j43"
+    ],
+    "cx": 852,
+    "cy": 177
+  },
+  {
+    "id": "j43",
+    "type": "junction",
+    "connection": [
+      "j42",
+      "j44"
+    ],
+    "cx": 854,
+    "cy": 224
+  },
+  {
+    "id": "j44",
+    "type": "junction",
+    "connection": [
+      "j43",
+      "j34",
+      "j50"
+    ],
+    "cx": 854,
+    "cy": 268
+  },
+  {
+    "id": "LT1-Terrace",
+    "type": "room",
+    "connection": [
+      "LT1-MedicalRehab"
+    ],
+    "cx": 885,
+    "cy": 99
+  },
+  {
+    "id": "LT1-Terrace-2",
+    "type": "room",
+    "connection": [
+      "LT1-MedicalRehab"
+    ],
+    "cx": 848,
+    "cy": 60
+  },
+  {
+    "id": "LT1-AdmissionMedicalRehab",
+    "type": "room",
+    "connection": [
+      "LT1-MedicalRehab"
+    ],
+    "cx": 830,
+    "cy": 94
+  },
+  {
+    "id": "LT1-VitalstimTherapy",
+    "type": "room",
+    "connection": [
+      "LT1-TherapyWard"
+    ],
+    "cx": 782,
+    "cy": 236
+  },
+  {
+    "id": "LT1-VIPTherapy",
+    "type": "room",
+    "connection": [
+      "LT1-TherapyWard"
+    ],
+    "cx": 783,
+    "cy": 255
+  },
+  {
+    "id": "j50",
+    "type": "junction",
+    "connection": [
+      "j44",
+      "LT1-SensoryIntegration"
+    ],
+    "cx": 887,
+    "cy": 269
+  },
+  {
+    "id": "LT1-SensoryIntegration",
+    "type": "room",
+    "connection": [
+      "j50"
+    ],
+    "cx": 889,
+    "cy": 302
+  },
+  {
+    "id": "LT1-OccupasionalTherapy",
+    "type": "room",
+    "connection": [
+      "j33"
+    ],
+    "cx": 858,
+    "cy": 293
+  },
+  {
+    "id": "LT1-SpeechOccupasionalTherapy",
+    "type": "room",
+    "connection": [
+      "j33"
+    ],
+    "cx": 859,
+    "cy": 314
+  },
+  {
+    "id": "LT1-SpeechTherapy",
+    "type": "room",
+    "connection": [
+      "j33"
+    ],
+    "cx": 859,
+    "cy": 338
+  },
+  {
+    "id": "j55",
+    "type": "junction",
+    "connection": [
+      "j32",
+      "LT1-NebulizerRoom",
+      "LT1-OP"
+    ],
+    "cx": 864,
+    "cy": 356
+  },
+  {
+    "id": "LT1-NebulizerRoom",
+    "type": "room",
+    "connection": [
+      "j55"
+    ],
+    "cx": 890,
+    "cy": 358
+  },
+  {
+    "id": "LT1-OP",
+    "type": "room",
+    "connection": [
+      "j55"
+    ],
+    "cx": 864,
+    "cy": 380
+  },
+  {
+    "id": "LT1-CU",
+    "type": "room",
+    "connection": [
+      "LT1-MedicalRehab"
+    ],
+    "cx": 834,
+    "cy": 113
+  },
+  {
+    "id": "LT1-Stair",
+    "type": "room",
+    "connection": [
+      "j17"
+    ],
+    "cx": 669,
+    "cy": 79
+  },
+  {
+    "id": "LT1-Mushola",
+    "type": "room",
+    "connection": [
+      "j16"
+    ],
+    "cx": 617,
+    "cy": 122
+  },
+  {
+    "id": "LT1-Toilet",
+    "type": "room",
+    "connection": [
+      "j10"
+    ],
+    "cx": 614,
+    "cy": 321
+  },
+  {
+    "id": "LT1-BedLiftLobby",
+    "type": "room",
+    "connection": [
+      "j3"
+    ],
+    "cx": 612,
+    "cy": 380
+  },
+  {
+    "id": "j63",
+    "type": "junction",
+    "connection": [
+      "j20",
+      "LT1-Koperasi",
+      "LT1-LiftMainLobby"
+    ],
+    "cx": 627,
+    "cy": 458
+  },
+  {
+    "id": "LT1-Koperasi",
+    "type": "room",
+    "connection": [
+      "j63"
+    ],
+    "cx": 671,
+    "cy": 459
+  },
+  {
+    "id": "LT1-LiftMainLobby",
+    "type": "room",
+    "connection": [
+      "j63"
+    ],
+    "cx": 627,
+    "cy": 434
+  },
+  {
+    "id": "LT1-Stair-2",
+    "type": "room",
+    "connection": [
+      "j19"
+    ],
+    "cx": 525,
+    "cy": 381
+  },
+  {
+    "id": "LT1-Library",
+    "type": "room",
+    "connection": [
+      "j7"
+    ],
+    "cx": 582,
+    "cy": 529
+  },
+  {
+    "id": "v68",
+    "type": "room",
+    "connection": [
+      "j26"
+    ],
+    "cx": 920,
+    "cy": 489
+  },
+  {
+    "id": "LT1-PhotoCopy",
+    "type": "room",
+    "connection": [
+      "j1"
+    ],
+    "cx": 675,
+    "cy": 403
+  },
+  {
+    "id": "j70",
+    "type": "junction",
+    "connection": [
+      "j25",
+      "LT1-Store2"
+    ],
+    "cx": 831,
+    "cy": 554
+  },
+  {
+    "id": "LT1-FemaleChangeRoom",
+    "type": "room",
+    "connection": [
+      "j26"
+    ],
+    "cx": 890,
+    "cy": 520
+  },
+  {
+    "id": "LT1-Store2",
+    "type": "room",
+    "connection": [
+      "j70"
+    ],
+    "cx": 843,
+    "cy": 564
+  }
+]

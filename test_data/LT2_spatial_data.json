@@ -1,0 +1,1441 @@
+[
+  {
+    "id": "LT2-MainEntrance",
+    "type": "room",
+    "connection": [
+      "j2",
+      "j97"
+    ],
+    "cx": 685,
+    "cy": 472
+  },
+  {
+    "id": "j2",
+    "type": "junction",
+    "connection": [
+      "LT2-MainEntrance",
+      "j3",
+      "j95",
+      "LT2-Lounge"
+    ],
+    "cx": 685,
+    "cy": 439
+  },
+  {
+    "id": "j3",
+    "type": "junction",
+    "connection": [
+      "j2",
+      "j4",
+      "j56",
+      "j83",
+      "LT2-Lounge"
+    ],
+    "cx": 687,
+    "cy": 389
+  },
+  {
+    "id": "j4",
+    "type": "junction",
+    "connection": [
+      "j3",
+      "j5",
+      "LT2-Shop1",
+      "LT2-Shop2"
+    ],
+    "cx": 688,
+    "cy": 357
+  },
+  {
+    "id": "j5",
+    "type": "junction",
+    "connection": [
+      "j4",
+      "j6"
+    ],
+    "cx": 688,
+    "cy": 322
+  },
+  {
+    "id": "j6",
+    "type": "junction",
+    "connection": [
+      "j5",
+      "j7",
+      "j53"
+    ],
+    "cx": 688,
+    "cy": 285
+  },
+  {
+    "id": "j7",
+    "type": "junction",
+    "connection": [
+      "j6",
+      "j8"
+    ],
+    "cx": 688,
+    "cy": 251
+  },
+  {
+    "id": "j8",
+    "type": "junction",
+    "connection": [
+      "j7",
+      "j9",
+      "j28"
+    ],
+    "cx": 689,
+    "cy": 217
+  },
+  {
+    "id": "j9",
+    "type": "junction",
+    "connection": [
+      "j8",
+      "j10",
+      "j48",
+      "v81"
+    ],
+    "cx": 689,
+    "cy": 186
+  },
+  {
+    "id": "j10",
+    "type": "junction",
+    "connection": [
+      "j9",
+      "j11",
+      "j16"
+    ],
+    "cx": 689,
+    "cy": 132
+  },
+  {
+    "id": "j11",
+    "type": "junction",
+    "connection": [
+      "j10",
+      "j12",
+      "j14"
+    ],
+    "cx": 660,
+    "cy": 132
+  },
+  {
+    "id": "j12",
+    "type": "junction",
+    "connection": [
+      "j11",
+      "LT2-ENTTHTGeneral"
+    ],
+    "cx": 631,
+    "cy": 132
+  },
+  {
+    "id": "LT2-ENTTHTGeneral",
+    "type": "room",
+    "connection": [
+      "j12"
+    ],
+    "cx": 602,
+    "cy": 132
+  },
+  {
+    "id": "j14",
+    "type": "junction",
+    "connection": [
+      "j11",
+      "j15",
+      "LT2-Kecantikan"
+    ],
+    "cx": 659,
+    "cy": 102
+  },
+  {
+    "id": "j15",
+    "type": "junction",
+    "connection": [
+      "j14",
+      "LT2-Stair-3",
+      "LT2-Toilet-3"
+    ],
+    "cx": 658,
+    "cy": 73
+  },
+  {
+    "id": "j16",
+    "type": "junction",
+    "connection": [
+      "j10",
+      "j17"
+    ],
+    "cx": 717,
+    "cy": 132
+  },
+  {
+    "id": "j17",
+    "type": "junction",
+    "connection": [
+      "j16",
+      "j18",
+      "j20"
+    ],
+    "cx": 745,
+    "cy": 132
+  },
+  {
+    "id": "j18",
+    "type": "junction",
+    "connection": [
+      "j17",
+      "j19"
+    ],
+    "cx": 773,
+    "cy": 132
+  },
+  {
+    "id": "j19",
+    "type": "junction",
+    "connection": [
+      "j18",
+      "j23",
+      "j30"
+    ],
+    "cx": 801,
+    "cy": 133
+  },
+  {
+    "id": "j20",
+    "type": "junction",
+    "connection": [
+      "j17",
+      "LT2-ObgynConsultRoom"
+    ],
+    "cx": 745,
+    "cy": 104
+  },
+  {
+    "id": "LT2-ObgynConsultRoom",
+    "type": "room",
+    "connection": [
+      "j20"
+    ],
+    "cx": 746,
+    "cy": 80
+  },
+  {
+    "id": "j23",
+    "type": "junction",
+    "connection": [
+      "j19",
+      "j24"
+    ],
+    "cx": 801,
+    "cy": 161
+  },
+  {
+    "id": "j24",
+    "type": "junction",
+    "connection": [
+      "j23",
+      "j25",
+      "j37"
+    ],
+    "cx": 801,
+    "cy": 188
+  },
+  {
+    "id": "j25",
+    "type": "junction",
+    "connection": [
+      "j24",
+      "j26"
+    ],
+    "cx": 801,
+    "cy": 216
+  },
+  {
+    "id": "j26",
+    "type": "junction",
+    "connection": [
+      "j25",
+      "j27",
+      "LT2-BostonPharmacy"
+    ],
+    "cx": 773,
+    "cy": 216
+  },
+  {
+    "id": "j27",
+    "type": "junction",
+    "connection": [
+      "j26",
+      "j28"
+    ],
+    "cx": 745,
+    "cy": 217
+  },
+  {
+    "id": "j28",
+    "type": "junction",
+    "connection": [
+      "j27",
+      "j8"
+    ],
+    "cx": 717,
+    "cy": 217
+  },
+  {
+    "id": "j30",
+    "type": "junction",
+    "connection": [
+      "j19",
+      "j31"
+    ],
+    "cx": 800,
+    "cy": 102
+  },
+  {
+    "id": "j31",
+    "type": "junction",
+    "connection": [
+      "j30",
+      "j32",
+      "LT2-Ruangkonsultasiumum",
+      "LT2-Optic1"
+    ],
+    "cx": 831,
+    "cy": 102
+  },
+  {
+    "id": "j32",
+    "type": "junction",
+    "connection": [
+      "j31",
+      "j33"
+    ],
+    "cx": 861,
+    "cy": 102
+  },
+  {
+    "id": "j33",
+    "type": "junction",
+    "connection": [
+      "j32",
+      "j34"
+    ],
+    "cx": 892,
+    "cy": 102
+  },
+  {
+    "id": "j34",
+    "type": "junction",
+    "connection": [
+      "j33",
+      "LT2-Toilet-2",
+      "LT2-Stair-2"
+    ],
+    "cx": 923,
+    "cy": 102
+  },
+  {
+    "id": "j37",
+    "type": "junction",
+    "connection": [
+      "j24",
+      "j38",
+      "j41",
+      "LT2-Optic2"
+    ],
+    "cx": 834,
+    "cy": 188
+  },
+  {
+    "id": "j38",
+    "type": "junction",
+    "connection": [
+      "j37",
+      "LT2-Surgical"
+    ],
+    "cx": 866,
+    "cy": 188
+  },
+  {
+    "id": "LT2-Surgical",
+    "type": "room",
+    "connection": [
+      "j38"
+    ],
+    "cx": 899,
+    "cy": 188
+  },
+  {
+    "id": "j41",
+    "type": "junction",
+    "connection": [
+      "j37",
+      "LT2-WaitingAreaPaediatrics"
+    ],
+    "cx": 834,
+    "cy": 216
+  },
+  {
+    "id": "LT2-WaitingAreaPaediatrics",
+    "type": "room",
+    "connection": [
+      "j41",
+      "j43"
+    ],
+    "cx": 833,
+    "cy": 243
+  },
+  {
+    "id": "j43",
+    "type": "junction",
+    "connection": [
+      "LT2-WaitingAreaPaediatrics",
+      "j44"
+    ],
+    "cx": 833,
+    "cy": 271
+  },
+  {
+    "id": "j44",
+    "type": "junction",
+    "connection": [
+      "j43",
+      "j45"
+    ],
+    "cx": 863,
+    "cy": 271
+  },
+  {
+    "id": "j45",
+    "type": "junction",
+    "connection": [
+      "j44",
+      "LT2-PaediatricsConsultandTreatment"
+    ],
+    "cx": 893,
+    "cy": 272
+  },
+  {
+    "id": "LT2-PaediatricsConsultandTreatment",
+    "type": "room",
+    "connection": [
+      "j45",
+      "j47"
+    ],
+    "cx": 923,
+    "cy": 272
+  },
+  {
+    "id": "j47",
+    "type": "junction",
+    "connection": [
+      "LT2-PaediatricsConsultandTreatment",
+      "LT2-Toilet-4",
+      "LT2-RuangMenyusui"
+    ],
+    "cx": 923,
+    "cy": 308
+  },
+  {
+    "id": "j48",
+    "type": "junction",
+    "connection": [
+      "j9",
+      "j49"
+    ],
+    "cx": 660,
+    "cy": 185
+  },
+  {
+    "id": "j49",
+    "type": "junction",
+    "connection": [
+      "j48",
+      "LT2-DentalEyesConsultandTreatmentRoom"
+    ],
+    "cx": 625,
+    "cy": 186
+  },
+  {
+    "id": "LT2-DentalEyesConsultandTreatmentRoom",
+    "type": "room",
+    "connection": [
+      "j49"
+    ],
+    "cx": 590,
+    "cy": 186
+  },
+  {
+    "id": "j53",
+    "type": "junction",
+    "connection": [
+      "j6",
+      "LT2-ECGConsultRoom",
+      "v126"
+    ],
+    "cx": 650,
+    "cy": 284
+  },
+  {
+    "id": "LT2-ECGConsultRoom",
+    "type": "room",
+    "connection": [
+      "j53"
+    ],
+    "cx": 593,
+    "cy": 283
+  },
+  {
+    "id": "j56",
+    "type": "junction",
+    "connection": [
+      "j3",
+      "j57"
+    ],
+    "cx": 649,
+    "cy": 388
+  },
+  {
+    "id": "j57",
+    "type": "junction",
+    "connection": [
+      "j56",
+      "j58",
+      "LT2-BedLiftLobby"
+    ],
+    "cx": 614,
+    "cy": 388
+  },
+  {
+    "id": "j58",
+    "type": "junction",
+    "connection": [
+      "j57",
+      "j59",
+      "j111"
+    ],
+    "cx": 574,
+    "cy": 389
+  },
+  {
+    "id": "j59",
+    "type": "junction",
+    "connection": [
+      "j58",
+      "j60",
+      "v112"
+    ],
+    "cx": 517,
+    "cy": 392
+  },
+  {
+    "id": "j60",
+    "type": "junction",
+    "connection": [
+      "j59",
+      "j61",
+      "j65"
+    ],
+    "cx": 535,
+    "cy": 419
+  },
+  {
+    "id": "j61",
+    "type": "junction",
+    "connection": [
+      "j60",
+      "j62"
+    ],
+    "cx": 536,
+    "cy": 459
+  },
+  {
+    "id": "j62",
+    "type": "junction",
+    "connection": [
+      "j61",
+      "j63"
+    ],
+    "cx": 535,
+    "cy": 492
+  },
+  {
+    "id": "j63",
+    "type": "junction",
+    "connection": [
+      "j62",
+      "j64"
+    ],
+    "cx": 535,
+    "cy": 524
+  },
+  {
+    "id": "j64",
+    "type": "junction",
+    "connection": [
+      "j63",
+      "j102",
+      "LT2-WaitingAreaEmergency-2"
+    ],
+    "cx": 535,
+    "cy": 557
+  },
+  {
+    "id": "j65",
+    "type": "junction",
+    "connection": [
+      "j60",
+      "j66",
+      "j113"
+    ],
+    "cx": 497,
+    "cy": 421
+  },
+  {
+    "id": "j66",
+    "type": "junction",
+    "connection": [
+      "j65",
+      "LT2-XRayImaging"
+    ],
+    "cx": 466,
+    "cy": 420
+  },
+  {
+    "id": "LT2-XRayImaging",
+    "type": "room",
+    "connection": [
+      "j66",
+      "j68",
+      "LT2-WaitingCTArea"
+    ],
+    "cx": 439,
+    "cy": 420
+  },
+  {
+    "id": "j68",
+    "type": "junction",
+    "connection": [
+      "LT2-XRayImaging",
+      "j69"
+    ],
+    "cx": 400,
+    "cy": 420
+  },
+  {
+    "id": "j69",
+    "type": "junction",
+    "connection": [
+      "j68",
+      "j70"
+    ],
+    "cx": 399,
+    "cy": 452
+  },
+  {
+    "id": "j70",
+    "type": "junction",
+    "connection": [
+      "j69",
+      "j71",
+      "j89"
+    ],
+    "cx": 379,
+    "cy": 452
+  },
+  {
+    "id": "j71",
+    "type": "junction",
+    "connection": [
+      "j70",
+      "j72",
+      "LT2-Mammography"
+    ],
+    "cx": 379,
+    "cy": 491
+  },
+  {
+    "id": "j72",
+    "type": "junction",
+    "connection": [
+      "j71",
+      "j73",
+      "LT2-Resuss",
+      "LT2-LVU",
+      "LT2-UltraSound"
+    ],
+    "cx": 379,
+    "cy": 530
+  },
+  {
+    "id": "j73",
+    "type": "junction",
+    "connection": [
+      "j72",
+      "j74",
+      "LT2-room130",
+      "LT2-Fluoroscopy"
+    ],
+    "cx": 378,
+    "cy": 569
+  },
+  {
+    "id": "j74",
+    "type": "junction",
+    "connection": [
+      "j73",
+      "j75",
+      "j76",
+      "LT2-EntryAccidentEmergency"
+    ],
+    "cx": 378,
+    "cy": 614
+  },
+  {
+    "id": "j75",
+    "type": "junction",
+    "connection": [
+      "j74",
+      "LT2-MRI15T"
+    ],
+    "cx": 378,
+    "cy": 647
+  },
+  {
+    "id": "j76",
+    "type": "junction",
+    "connection": [
+      "j74",
+      "j77",
+      "LT2-CTScan"
+    ],
+    "cx": 345,
+    "cy": 613
+  },
+  {
+    "id": "j77",
+    "type": "junction",
+    "connection": [
+      "j76",
+      "j78"
+    ],
+    "cx": 312,
+    "cy": 612
+  },
+  {
+    "id": "j78",
+    "type": "junction",
+    "connection": [
+      "j77",
+      "j79",
+      "LT2-Fluoroscopy",
+      "LT2-room130"
+    ],
+    "cx": 312,
+    "cy": 571
+  },
+  {
+    "id": "j79",
+    "type": "junction",
+    "connection": [
+      "j78",
+      "LT2-LVU",
+      "LT2-UltraSound"
+    ],
+    "cx": 311,
+    "cy": 520
+  },
+  {
+    "id": "v81",
+    "type": "room",
+    "connection": [
+      "j9"
+    ],
+    "cx": 735,
+    "cy": 185
+  },
+  {
+    "id": "LT2-BostonPharmacy",
+    "type": "room",
+    "connection": [
+      "j26",
+      "LT2-PharmacyFarmasi"
+    ],
+    "cx": 773,
+    "cy": 259
+  },
+  {
+    "id": "j83",
+    "type": "junction",
+    "connection": [
+      "j3",
+      "j84",
+      "LT2-MandarinKitchenRice",
+      "LT2-Lounge"
+    ],
+    "cx": 726,
+    "cy": 388
+  },
+  {
+    "id": "j84",
+    "type": "junction",
+    "connection": [
+      "j83",
+      "j85"
+    ],
+    "cx": 764,
+    "cy": 388
+  },
+  {
+    "id": "j85",
+    "type": "junction",
+    "connection": [
+      "j84",
+      "j86"
+    ],
+    "cx": 803,
+    "cy": 387
+  },
+  {
+    "id": "j86",
+    "type": "junction",
+    "connection": [
+      "j85",
+      "j87",
+      "LT2-NOBUBank",
+      "LT2-DrLounge"
+    ],
+    "cx": 842,
+    "cy": 387
+  },
+  {
+    "id": "j87",
+    "type": "junction",
+    "connection": [
+      "j86",
+      "LT2-Toilet",
+      "LT2-Stair",
+      "LT2-KitchenServery"
+    ],
+    "cx": 893,
+    "cy": 386
+  },
+  {
+    "id": "j89",
+    "type": "junction",
+    "connection": [
+      "j70",
+      "j90",
+      "j94",
+      "LT2-CounterRadiology"
+    ],
+    "cx": 364,
+    "cy": 434
+  },
+  {
+    "id": "j90",
+    "type": "junction",
+    "connection": [
+      "j89",
+      "j91"
+    ],
+    "cx": 363,
+    "cy": 402
+  },
+  {
+    "id": "j91",
+    "type": "junction",
+    "connection": [
+      "j90",
+      "j92"
+    ],
+    "cx": 361,
+    "cy": 369
+  },
+  {
+    "id": "j92",
+    "type": "junction",
+    "connection": [
+      "j91",
+      "j93",
+      "LT2-NurseStation"
+    ],
+    "cx": 360,
+    "cy": 337
+  },
+  {
+    "id": "j93",
+    "type": "junction",
+    "connection": [
+      "j92",
+      "LT2-GammaKnife",
+      "LT2-Toilet-4"
+    ],
+    "cx": 310,
+    "cy": 335
+  },
+  {
+    "id": "j94",
+    "type": "junction",
+    "connection": [
+      "j89",
+      "LT2-MRI3T"
+    ],
+    "cx": 339,
+    "cy": 417
+  },
+  {
+    "id": "j95",
+    "type": "junction",
+    "connection": [
+      "j2",
+      "j96"
+    ],
+    "cx": 650,
+    "cy": 439
+  },
+  {
+    "id": "j96",
+    "type": "junction",
+    "connection": [
+      "j95",
+      "j97",
+      "LT2-LiftMainLobby"
+    ],
+    "cx": 611,
+    "cy": 440
+  },
+  {
+    "id": "j97",
+    "type": "junction",
+    "connection": [
+      "j96",
+      "LT2-InRegistration",
+      "LT2-MainEntrance"
+    ],
+    "cx": 612,
+    "cy": 472
+  },
+  {
+    "id": "LT2-InRegistration",
+    "type": "room",
+    "connection": [
+      "j97",
+      "LT2-Cashier"
+    ],
+    "cx": 612,
+    "cy": 497
+  },
+  {
+    "id": "LT2-Cashier",
+    "type": "room",
+    "connection": [
+      "LT2-InRegistration",
+      "j100"
+    ],
+    "cx": 611,
+    "cy": 529
+  },
+  {
+    "id": "j100",
+    "type": "junction",
+    "connection": [
+      "LT2-Cashier",
+      "j101",
+      "j148"
+    ],
+    "cx": 611,
+    "cy": 560
+  },
+  {
+    "id": "j101",
+    "type": "junction",
+    "connection": [
+      "j100",
+      "LT2-WaitingAreaEmergency-2"
+    ],
+    "cx": 610,
+    "cy": 591
+  },
+  {
+    "id": "j102",
+    "type": "junction",
+    "connection": [
+      "j64",
+      "LT2-AccidentandEmergency"
+    ],
+    "cx": 497,
+    "cy": 557
+  },
+  {
+    "id": "LT2-AccidentandEmergency",
+    "type": "room",
+    "connection": [
+      "j102",
+      "LT2-EntryAccidentEmergency"
+    ],
+    "cx": 432,
+    "cy": 559
+  },
+  {
+    "id": "LT2-GammaKnife",
+    "type": "room",
+    "connection": [
+      "j93"
+    ],
+    "cx": 311,
+    "cy": 297
+  },
+  {
+    "id": "LT2-MRI3T",
+    "type": "room",
+    "connection": [
+      "j94"
+    ],
+    "cx": 303,
+    "cy": 391
+  },
+  {
+    "id": "LT2-WaitingCTArea",
+    "type": "room",
+    "connection": [
+      "LT2-XRayImaging",
+      "LT2-EEGEyeClinic",
+      "LT2-DieticianEyeClinic",
+      "j113"
+    ],
+    "cx": 438,
+    "cy": 364
+  },
+  {
+    "id": "LT2-LiftMainLobby",
+    "type": "room",
+    "connection": [
+      "j96"
+    ],
+    "cx": 610,
+    "cy": 413
+  },
+  {
+    "id": "LT2-BedLiftLobby",
+    "type": "room",
+    "connection": [
+      "j57"
+    ],
+    "cx": 614,
+    "cy": 359
+  },
+  {
+    "id": "j111",
+    "type": "junction",
+    "connection": [
+      "j58",
+      "v112"
+    ],
+    "cx": 573,
+    "cy": 355
+  },
+  {
+    "id": "v112",
+    "type": "room",
+    "connection": [
+      "j111",
+      "j113",
+      "j59"
+    ],
+    "cx": 518,
+    "cy": 355
+  },
+  {
+    "id": "j113",
+    "type": "junction",
+    "connection": [
+      "j65",
+      "j114",
+      "v112",
+      "LT2-WaitingCTArea"
+    ],
+    "cx": 496,
+    "cy": 367
+  },
+  {
+    "id": "j114",
+    "type": "junction",
+    "connection": [
+      "j113",
+      "v115"
+    ],
+    "cx": 495,
+    "cy": 312
+  },
+  {
+    "id": "v115",
+    "type": "room",
+    "connection": [
+      "j114"
+    ],
+    "cx": 496,
+    "cy": 260
+  },
+  {
+    "id": "LT2-MandarinKitchenRice",
+    "type": "room",
+    "connection": [
+      "j83",
+      "LT2-KitchenServery"
+    ],
+    "cx": 819,
+    "cy": 436
+  },
+  {
+    "id": "LT2-Toilet",
+    "type": "room",
+    "connection": [
+      "j87"
+    ],
+    "cx": 894,
+    "cy": 356
+  },
+  {
+    "id": "LT2-Stair",
+    "type": "room",
+    "connection": [
+      "j87"
+    ],
+    "cx": 949,
+    "cy": 389
+  },
+  {
+    "id": "LT2-NOBUBank",
+    "type": "room",
+    "connection": [
+      "j86"
+    ],
+    "cx": 830,
+    "cy": 352
+  },
+  {
+    "id": "LT2-DrLounge",
+    "type": "room",
+    "connection": [
+      "j86"
+    ],
+    "cx": 860,
+    "cy": 357
+  },
+  {
+    "id": "LT2-PharmacyFarmasi",
+    "type": "room",
+    "connection": [
+      "LT2-BostonPharmacy"
+    ],
+    "cx": 802,
+    "cy": 259
+  },
+  {
+    "id": "LT2-Toilet-2",
+    "type": "room",
+    "connection": [
+      "j34"
+    ],
+    "cx": 922,
+    "cy": 80
+  },
+  {
+    "id": "LT2-Stair-2",
+    "type": "room",
+    "connection": [
+      "j34"
+    ],
+    "cx": 949,
+    "cy": 102
+  },
+  {
+    "id": "LT2-Shop1",
+    "type": "room",
+    "connection": [
+      "j4"
+    ],
+    "cx": 717,
+    "cy": 360
+  },
+  {
+    "id": "LT2-Shop2",
+    "type": "room",
+    "connection": [
+      "j4"
+    ],
+    "cx": 661,
+    "cy": 356
+  },
+  {
+    "id": "v126",
+    "type": "room",
+    "connection": [
+      "j53"
+    ],
+    "cx": 631,
+    "cy": 303
+  },
+  {
+    "id": "LT2-MRI15T",
+    "type": "room",
+    "connection": [
+      "j75"
+    ],
+    "cx": 378,
+    "cy": 685
+  },
+  {
+    "id": "LT2-CTScan",
+    "type": "room",
+    "connection": [
+      "j76"
+    ],
+    "cx": 303,
+    "cy": 638
+  },
+  {
+    "id": "LT2-Fluoroscopy",
+    "type": "room",
+    "connection": [
+      "j78",
+      "j73"
+    ],
+    "cx": 330,
+    "cy": 586
+  },
+  {
+    "id": "LT2-room130",
+    "type": "room",
+    "connection": [
+      "j78",
+      "j73"
+    ],
+    "cx": 335,
+    "cy": 558
+  },
+  {
+    "id": "LT2-LVU",
+    "type": "room",
+    "connection": [
+      "j79",
+      "j72"
+    ],
+    "cx": 333,
+    "cy": 530
+  },
+  {
+    "id": "LT2-UltraSound",
+    "type": "room",
+    "connection": [
+      "j79",
+      "j72"
+    ],
+    "cx": 333,
+    "cy": 501
+  },
+  {
+    "id": "LT2-Resuss",
+    "type": "room",
+    "connection": [
+      "j72"
+    ],
+    "cx": 407,
+    "cy": 530
+  },
+  {
+    "id": "LT2-EntryAccidentEmergency",
+    "type": "room",
+    "connection": [
+      "j74",
+      "LT2-WaitingAreaEmergency",
+      "LT2-AccidentandEmergency",
+      "LT2-room151"
+    ],
+    "cx": 431,
+    "cy": 614
+  },
+  {
+    "id": "LT2-WaitingAreaEmergency",
+    "type": "room",
+    "connection": [
+      "LT2-EntryAccidentEmergency",
+      "LT2-WaitingAreaEmergency-2"
+    ],
+    "cx": 546,
+    "cy": 614
+  },
+  {
+    "id": "LT2-CounterRadiology",
+    "type": "room",
+    "connection": [
+      "j89"
+    ],
+    "cx": 344,
+    "cy": 453
+  },
+  {
+    "id": "LT2-EEGEyeClinic",
+    "type": "room",
+    "connection": [
+      "LT2-WaitingCTArea"
+    ],
+    "cx": 402,
+    "cy": 363
+  },
+  {
+    "id": "LT2-DieticianEyeClinic",
+    "type": "room",
+    "connection": [
+      "LT2-WaitingCTArea"
+    ],
+    "cx": 421,
+    "cy": 388
+  },
+  {
+    "id": "LT2-NurseStation",
+    "type": "room",
+    "connection": [
+      "j92"
+    ],
+    "cx": 345,
+    "cy": 356
+  },
+  {
+    "id": "LT2-Stair-3",
+    "type": "room",
+    "connection": [
+      "j15"
+    ],
+    "cx": 657,
+    "cy": 41
+  },
+  {
+    "id": "LT2-Toilet-3",
+    "type": "room",
+    "connection": [
+      "j15"
+    ],
+    "cx": 622,
+    "cy": 74
+  },
+  {
+    "id": "LT2-Optic2",
+    "type": "room",
+    "connection": [
+      "j37"
+    ],
+    "cx": 833,
+    "cy": 161
+  },
+  {
+    "id": "LT2-Ruangkonsultasiumum",
+    "type": "room",
+    "connection": [
+      "j31"
+    ],
+    "cx": 831,
+    "cy": 60
+  },
+  {
+    "id": "LT2-Optic1",
+    "type": "room",
+    "connection": [
+      "j31"
+    ],
+    "cx": 831,
+    "cy": 131
+  },
+  {
+    "id": "LT2-Toilet-4",
+    "type": "room",
+    "connection": [
+      "j47"
+    ],
+    "cx": 893,
+    "cy": 323
+  },
+  {
+    "id": "LT2-RuangMenyusui",
+    "type": "room",
+    "connection": [
+      "j47"
+    ],
+    "cx": 924,
+    "cy": 328
+  },
+  {
+    "id": "LT2-WaitingAreaEmergency-2",
+    "type": "room",
+    "connection": [
+      "j101",
+      "j64",
+      "LT2-WaitingAreaEmergency"
+    ],
+    "cx": 544,
+    "cy": 591
+  },
+  {
+    "id": "LT2-KitchenServery",
+    "type": "room",
+    "connection": [
+      "LT2-MandarinKitchenRice",
+      "j87"
+    ],
+    "cx": 896,
+    "cy": 437
+  },
+  {
+    "id": "LT2-room151",
+    "type": "room",
+    "connection": [
+      "LT2-EntryAccidentEmergency"
+    ],
+    "cx": 457,
+    "cy": 641
+  },
+  {
+    "id": "LT2-Lounge",
+    "type": "room",
+    "connection": [
+      "j83",
+      "j3",
+      "j2"
+    ],
+    "cx": 727,
+    "cy": 439
+  },
+  {
+    "id": "LT2-Mammography",
+    "type": "room",
+    "connection": [
+      "j71"
+    ],
+    "cx": 403,
+    "cy": 504
+  },
+  {
+    "id": "LT2-Kecantikan",
+    "type": "room",
+    "connection": [
+      "j14"
+    ],
+    "cx": 689,
+    "cy": 101
+  },
+  {
+    "id": "LT2-Toilet-4",
+    "type": "room",
+    "connection": [
+      "j93"
+    ],
+    "cx": 271,
+    "cy": 333
+  }
+]

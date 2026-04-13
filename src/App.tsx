@@ -1,1023 +1,2267 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from "react";
 
-// ─────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────
+// ==========================================
+// API CONFIGURATION
+// ==========================================
+const API_URL =
+  (import.meta as any).env?.VITE_API_URL || "http://localhost:8080";
 
-type NodeType = 'room' | 'junction'
-type ToolMode = 'draw' | 'room' | 'junction' | 'connect' | 'select'
-type TableView = 'graph' | 'db'
-
-interface Vertex {
-  id: string
-  type: NodeType
-  label: string | null
-  objectName: string | null
-  categoryId: string | null
-  aliases: string[]
-  cx: number
-  cy: number
+function getAuthHeaders() {
+  const token = sessionStorage.getItem("fp_token");
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
 }
+
+// ==========================================
+// TYPES
+// ==========================================
+type NodeType = "room" | "junction";
+type ToolMode = "draw" | "room" | "junction" | "connect" | "select";
+type TableView = "graph" | "db";
+
+// Part 1: The Spatial "Skeleton"
+interface GraphNode {
+  id: string;
+  type: "room" | "junction";
+  connection: string[];
+  cx: number;
+  cy: number;
+}
+
+// Part 2: The Metadata "Brain" (Rooms only)
+interface RoomMetadata {
+  id: string;
+  slug: string;
+  label: string | null;
+  floor: string;
+  wings: string;
+  description_id: string | null;
+  description_en: string | null;
+  "room-type": string | null;
+  keywords: string | null;
+  aliases: string | null;
+}
+
+// The UI Type (Intersection of both)
+type Vertex = GraphNode & Partial<RoomMetadata>;
 
 interface Edge {
-  id: string
-  from: string
-  to: string
+  id: string;
+  from: string;
+  to: string;
 }
-
 interface Transform {
-  scale: number
-  tx: number
-  ty: number
+  scale: number;
+  tx: number;
+  ty: number;
+}
+interface Point {
+  x: number;
+  y: number;
+}
+interface PreviewLine {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
+interface MarqueeRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 }
 
-interface Point { x: number; y: number }
-interface PreviewLine { x1: number; y1: number; x2: number; y2: number }
-interface MarqueeRect { x: number; y: number; w: number; h: number }
-
-interface UserData {
-  vertices: Vertex[]
-  edges: Edge[]
-  globalCounter: number
-  canvasW: number
-  canvasH: number
+interface MapProject {
+  id: string;
+  name: string;
+  updatedAt: number;
 }
 
-interface Users { [k: string]: { hash: string } }
-
-const CATEGORIES = ['CIRCULATION', 'SERVICE', 'CLINIC', 'TOILET', 'PUBLIC'] as const
+const CATEGORIES = [
+  "CIRCULATION",
+  "SERVICE",
+  "CLINIC",
+  "TOILET",
+  "PUBLIC",
+] as const;
 
 // ─────────────────────────────────────────────
-// STORAGE HELPERS
+// HELPERS
 // ─────────────────────────────────────────────
-
-function hashStr(s: string): string {
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
-  return h.toString(36)
-}
-
-const getUsers = (): Users => JSON.parse(localStorage.getItem('fp_users') ?? '{}')
-const saveUsers = (u: Users) => localStorage.setItem('fp_users', JSON.stringify(u))
-const getSession = (): string | null => sessionStorage.getItem('fp_session')
-const setSession = (u: string) => sessionStorage.setItem('fp_session', u)
-const clearSession = () => sessionStorage.removeItem('fp_session')
-
-function loadUserData(user: string): { data: UserData | null; svgContent: string } {
-  const raw = localStorage.getItem(`fp_data_${user}`)
-  return {
-    data: raw ? (JSON.parse(raw) as UserData) : null,
-    svgContent: localStorage.getItem(`fp_svg_${user}`) ?? '',
+function generateUid(): string {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
   }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 }
 
-function saveUserData(user: string, data: UserData, svgContent: string) {
-  try {
-    localStorage.setItem(`fp_data_${user}`, JSON.stringify(data))
-    if (svgContent) {
-      try {
-        localStorage.setItem(`fp_svg_${user}`, svgContent)
-      } catch {
-        console.warn('SVG too large for localStorage, skipping SVG save.')
-      }
-    } else {
-      localStorage.removeItem(`fp_svg_${user}`)
-    }
-  } catch (e) {
-    console.warn('localStorage save failed:', e)
-  }
+function generateSlug(
+  floor: string,
+  wings: string,
+  label: string | null,
+  type: NodeType,
+  id: string,
+): string {
+  const f = floor || "";
+  const w = (wings || "").toLowerCase().replace(/\s+/g, "");
+  const l = (label || (type === "room" ? "room" : "junct"))
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  const shortId = id.split("-")[0].substring(0, 4);
+  return `f${f}-w${w}-${l}-${shortId}`;
 }
+
+const getSession = (): string | null => sessionStorage.getItem("fp_user");
+const setSession = (u: string) => sessionStorage.setItem("fp_user", u);
+const clearSession = () => {
+  sessionStorage.removeItem("fp_session");
+  sessionStorage.removeItem("fp_user");
+  sessionStorage.removeItem("fp_token");
+};
 
 // ─────────────────────────────────────────────
 // AUTH SCREEN
 // ─────────────────────────────────────────────
-
 function AuthScreen({ onLogin }: { onLogin: (u: string) => void }) {
-  const [isReg, setIsReg] = useState(false)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [isReg, setIsReg] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  function submit() {
-    setError('')
-    if (!username.trim() || !password.trim()) { setError('Please fill in all fields.'); return }
-    const users = getUsers()
-    if (isReg) {
-      if (users[username]) { setError('Username already taken.'); return }
-      users[username] = { hash: hashStr(password) }
-      saveUsers(users)
-      setSession(username)
-      onLogin(username)
-    } else {
-      if (!users[username] || users[username].hash !== hashStr(password)) {
-        setError('Invalid username or password.'); return
+  async function submit() {
+    setError("");
+    if (!username.trim() || !password.trim()) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    const endpoint = isReg ? "/api/auth/register" : "/api/auth/login";
+    try {
+      const res = await fetch(`${API_URL}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Authentication failed");
+
+      if (isReg) {
+        setIsReg(false);
+        setError("Registration successful! Please login.");
+        setPassword("");
+      } else {
+        sessionStorage.setItem("fp_token", data.token);
+        setSession(data.username);
+        onLogin(data.username);
       }
-      setSession(username)
-      onLogin(username)
+    } catch (err: any) {
+      setError(err.message);
     }
   }
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh',
-      background: 'linear-gradient(145deg, #0f1c26 0%, #1a2f40 40%, #243b55 100%)',
-      fontFamily: "'Segoe UI', system-ui, sans-serif",
-    }}>
-      {/* Decorative grid */}
-      <div style={{
-        position: 'absolute', inset: 0, opacity: 0.04,
-        backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
-        backgroundSize: '40px 40px',
-      }} />
-
-      <div style={{
-        position: 'relative', background: 'rgba(255,255,255,0.97)', borderRadius: 20,
-        padding: '44px 48px', width: 420,
-        boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1)',
-      }}>
-        {/* Logo area */}
-        <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: 16, background: 'linear-gradient(135deg, #1a6fad, #2ecc71)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 32, margin: '0 auto 14px', boxShadow: '0 8px 24px rgba(26,111,173,0.4)',
-          }}>🗺️</div>
-          <h2 style={{ margin: 0, fontSize: 26, fontWeight: 800, color: '#0f1c26', letterSpacing: '-0.5px' }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        background:
+          "linear-gradient(145deg, #0f1c26 0%, #1a2f40 40%, #243b55 100%)",
+        fontFamily: "'Segoe UI', system-ui, sans-serif",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.04,
+          backgroundImage:
+            "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          background: "rgba(255,255,255,0.97)",
+          borderRadius: 20,
+          padding: "44px 48px",
+          width: 420,
+          boxShadow:
+            "0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1)",
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 16,
+              background: "linear-gradient(135deg, #1a6fad, #2ecc71)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 32,
+              margin: "0 auto 14px",
+              boxShadow: "0 8px 24px rgba(26,111,173,0.4)",
+            }}
+          >
+            🗺️
+          </div>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 26,
+              fontWeight: 800,
+              color: "#0f1c26",
+            }}
+          >
             Floorplan Mapper
           </h2>
-          <p style={{ margin: '8px 0 0', color: '#64748b', fontSize: 14 }}>
-            {isReg ? 'Create your workspace account' : 'Sign in to your workspace'}
-          </p>
         </div>
-
-        {/* Tab switcher */}
-        <div style={{
-          display: 'flex', background: '#f1f5f9', borderRadius: 10, padding: 4, marginBottom: 24,
-        }}>
-          {(['Sign In', 'Register'] as const).map((label, i) => {
-            const active = isReg === (i === 1)
+        <div
+          style={{
+            display: "flex",
+            background: "#f1f5f9",
+            borderRadius: 10,
+            padding: 4,
+            marginBottom: 24,
+          }}
+        >
+          {(["Sign In", "Register"] as const).map((label, i) => {
+            const active = isReg === (i === 1);
             return (
-              <button key={label} onClick={() => { setIsReg(i === 1); setError('') }}
+              <button
+                key={label}
+                onClick={() => {
+                  setIsReg(i === 1);
+                  setError("");
+                }}
                 style={{
-                  flex: 1, padding: '8px 0', border: 'none', borderRadius: 7, cursor: 'pointer',
-                  fontWeight: 700, fontSize: 13, fontFamily: 'inherit', transition: 'all 0.2s',
-                  background: active ? 'white' : 'transparent',
-                  color: active ? '#1a6fad' : '#64748b',
-                  boxShadow: active ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
-                }}>
+                  flex: 1,
+                  padding: "8px 0",
+                  border: "none",
+                  borderRadius: 7,
+                  cursor: "pointer",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  transition: "all 0.2s",
+                  background: active ? "white" : "transparent",
+                  color: active ? "#1a6fad" : "#64748b",
+                  boxShadow: active ? "0 2px 8px rgba(0,0,0,0.12)" : "none",
+                }}
+              >
                 {label}
               </button>
-            )
+            );
           })}
         </div>
-
         {error && (
-          <div style={{
-            background: '#fff5f5', color: '#b91c1c', padding: '10px 14px', borderRadius: 8,
-            marginBottom: 18, fontSize: 13, borderLeft: '3px solid #ef4444',
-            display: 'flex', gap: 8, alignItems: 'center',
-          }}>
+          <div
+            style={{
+              background: "#fff5f5",
+              color: "#b91c1c",
+              padding: "10px 14px",
+              borderRadius: 8,
+              marginBottom: 18,
+              fontSize: 13,
+              borderLeft: "3px solid #ef4444",
+            }}
+          >
             ⚠️ {error}
           </div>
         )}
-
-        {[
-          { label: 'Username', value: username, set: setUsername, type: 'text', ph: 'your_username' },
-          { label: 'Password', value: password, set: setPassword, type: 'password', ph: '••••••••' },
-        ].map(({ label, value, set, type, ph }) => (
-          <div key={label} style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
-              {label}
-            </label>
-            <input
-              type={type} value={value} placeholder={ph}
-              autoFocus={type === 'text'}
-              onChange={e => set(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && submit()}
-              style={{
-                width: '100%', padding: '11px 14px', border: '2px solid #e2e8f0',
-                borderRadius: 10, fontSize: 14, fontFamily: 'inherit', outline: 'none',
-                transition: 'border-color 0.2s', color: '#0f1c26',
-              }}
-              onFocus={e => (e.target.style.borderColor = '#1a6fad')}
-              onBlur={e => (e.target.style.borderColor = '#e2e8f0')}
-            />
-          </div>
-        ))}
-
-        <button onClick={submit} style={{
-          width: '100%', padding: '13px', marginTop: 8,
-          background: 'linear-gradient(135deg, #1a6fad, #1558a0)',
-          color: 'white', border: 'none', borderRadius: 10,
-          fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
-          boxShadow: '0 4px 16px rgba(26,111,173,0.4)',
-          letterSpacing: '0.02em',
-        }}>
-          {isReg ? '✨ Create Account' : '→ Sign In'}
+        <div style={{ marginBottom: 16 }}>
+          <label
+            style={{
+              display: "block",
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#475569",
+              textTransform: "uppercase",
+              marginBottom: 6,
+            }}
+          >
+            Username
+          </label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submit()}
+            style={{
+              width: "100%",
+              padding: "11px 14px",
+              border: "2px solid #e2e8f0",
+              borderRadius: 10,
+              fontSize: 14,
+              outline: "none",
+            }}
+          />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label
+            style={{
+              display: "block",
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#475569",
+              textTransform: "uppercase",
+              marginBottom: 6,
+            }}
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submit()}
+            style={{
+              width: "100%",
+              padding: "11px 14px",
+              border: "2px solid #e2e8f0",
+              borderRadius: 10,
+              fontSize: 14,
+              outline: "none",
+            }}
+          />
+        </div>
+        <button
+          onClick={submit}
+          style={{
+            width: "100%",
+            padding: "13px",
+            marginTop: 8,
+            background: "linear-gradient(135deg, #1a6fad, #1558a0)",
+            color: "white",
+            border: "none",
+            borderRadius: 10,
+            fontSize: 15,
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
+        >
+          {isReg ? "✨ Create Account" : "→ Sign In"}
         </button>
-
-        <p style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: '#94a3b8' }}>
-          Your data is saved locally to this browser.
-        </p>
       </div>
     </div>
-  )
+  );
+}
+
+// ─────────────────────────────────────────────
+// PROJECT SELECTION SCREEN
+// ─────────────────────────────────────────────
+function ProjectSelectionScreen({
+  user,
+  onSelectProject,
+  onLogout,
+}: {
+  user: string;
+  onSelectProject: (id: string) => void;
+  onLogout: () => void;
+}) {
+  const [projects, setProjects] = useState<MapProject[]>([]);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/maps`, { headers: getAuthHeaders() })
+      .then((res) => res.json())
+      .then((data) =>
+        setProjects(data.sort((a: any, b: any) => b.updatedAt - a.updatedAt)),
+      )
+      .catch(console.error);
+  }, []);
+
+  async function createProject() {
+    const name = prompt("Enter new map name:", "Floor 1 Map");
+    if (!name) return;
+    try {
+      const res = await fetch(`${API_URL}/api/maps`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      onSelectProject(data.mapId);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function deleteProject(id: string) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this map? This cannot be undone.",
+      )
+    )
+      return;
+    try {
+      await fetch(`${API_URL}/api/maps/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      setProjects((p) => p.filter((proj) => proj.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  return (
+    <div
+      style={{
+        padding: "60px 20px",
+        fontFamily: "system-ui",
+        background: "#f8fafc",
+        minHeight: "100vh",
+      }}
+    >
+      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 40,
+          }}
+        >
+          <div>
+            <h1 style={{ margin: 0 }}>Your Maps</h1>
+            <p style={{ margin: "5px 0 0", color: "#64748b" }}>
+              Logged in as <strong>{user}</strong>
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <button
+              onClick={createProject}
+              style={{
+                padding: "10px 16px",
+                background: "#3b82f6",
+                color: "white",
+                border: "none",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              + New Map
+            </button>
+            <button
+              onClick={onLogout}
+              style={{
+                padding: "10px 16px",
+                background: "white",
+                color: "#ef4444",
+                border: "1px solid #fca5a5",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: 20,
+          }}
+        >
+          {projects.map((p) => (
+            <div
+              key={p.id}
+              style={{
+                background: "white",
+                padding: 20,
+                borderRadius: 12,
+                border: "1px solid #e2e8f0",
+                boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <h3 style={{ margin: "0 0 10px 0" }}>{p.name}</h3>
+              <p
+                style={{ margin: "0 0 20px 0", fontSize: 12, color: "#94a3b8" }}
+              >
+                Updated: {new Date(p.updatedAt).toLocaleDateString()}
+              </p>
+              <div style={{ marginTop: "auto", display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => onSelectProject(p.id)}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    background: "#eff6ff",
+                    color: "#2563eb",
+                    border: "1px solid #bfdbfe",
+                    borderRadius: 6,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Open
+                </button>
+                <button
+                  onClick={() => deleteProject(p.id)}
+                  style={{
+                    padding: "8px",
+                    background: "#fef2f2",
+                    color: "#ef4444",
+                    border: "1px solid #fecaca",
+                    borderRadius: 6,
+                    cursor: "pointer",
+                  }}
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+          ))}
+          {projects.length === 0 && (
+            <div
+              style={{
+                gridColumn: "1 / -1",
+                textAlign: "center",
+                padding: 60,
+                border: "2px dashed #cbd5e1",
+                borderRadius: 12,
+                color: "#64748b",
+              }}
+            >
+              No maps found. Click "+ New Map" to start.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─────────────────────────────────────────────
 // SMALL HELPERS
 // ─────────────────────────────────────────────
-
-function PropField({ label, value, onChange, placeholder }: {
-  label: string; value: string; onChange: (v: string) => void; placeholder?: string
+function PropField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
 }) {
   return (
     <div style={{ marginBottom: 10 }}>
-      <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>
+      <label
+        style={{
+          display: "block",
+          fontSize: 10,
+          fontWeight: 700,
+          color: "#94a3b8",
+          textTransform: "uppercase",
+          marginBottom: 4,
+        }}
+      >
         {label}
       </label>
-      <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        style={{ width: '100%', padding: '7px 10px', border: '1px solid #e2e8f0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', outline: 'none', color: '#1e293b' }}
-        onFocus={e => (e.target.style.borderColor = '#3b82f6')}
-        onBlur={e => (e.target.style.borderColor = '#e2e8f0')}
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{
+          width: "100%",
+          padding: "7px 10px",
+          border: "1px solid #e2e8f0",
+          borderRadius: 7,
+          fontSize: 13,
+          outline: "none",
+          color: "#1e293b",
+          boxSizing: "border-box",
+        }}
       />
     </div>
-  )
+  );
 }
 
 const TD: React.CSSProperties = {
-  padding: '5px 8px', borderBottom: '1px solid #f1f5f9', whiteSpace: 'nowrap',
-  overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 90, fontSize: 10, color: '#475569',
-}
+  padding: "5px 8px",
+  borderBottom: "1px solid #f1f5f9",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  maxWidth: 90,
+  fontSize: 10,
+  color: "#475569",
+};
 
 // ─────────────────────────────────────────────
 // FLOORPLAN MAPPER
 // ─────────────────────────────────────────────
+function FloorplanMapper({
+  user,
+  projectId,
+  onBack,
+}: {
+  user: string;
+  projectId: string;
+  onBack: () => void;
+}) {
+  const [vertices, setVertices] = useState<Vertex[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const [originalVertices, setOriginalVertices] = useState<Vertex[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
-function FloorplanMapper({ user, onLogout }: { user: string; onLogout: () => void }) {
-  // ── Data State ──
-  const [vertices, setVertices] = useState<Vertex[]>([])
-  const [edges, setEdges] = useState<Edge[]>([])
-  const [globalCounter, setGlobalCounter] = useState(1)
-  const [svgContent, setSvgContent] = useState('')
-  const [canvasW, setCanvasW] = useState(1500)
-  const [canvasH, setCanvasH] = useState(1000)
+  const [svgUrl, setSvgUrl] = useState<string | null>(null);
+  const [canvasW, setCanvasW] = useState(1500);
+  const [canvasH, setCanvasH] = useState(1000);
 
-  // ── UI State ──
-  const [mode, setModeState] = useState<ToolMode>('draw')
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [tableView, setTableView] = useState<TableView>('graph')
-  const [idPrefix, setIdPrefix] = useState('LT5-')
-  const [pixelSpacing, setPixelSpacing] = useState(40)
-  const [history, setHistory] = useState<string[]>([])
-  const [connectFirst, setConnectFirst] = useState<Vertex | null>(null)
-  const [transform, setTransform] = useState<Transform>({ scale: 1, tx: 0, ty: 0 })
-  const [preview, setPreview] = useState<PreviewLine | null>(null)
-  const [marquee, setMarquee] = useState<MarqueeRect | null>(null)
+  const [mode, setModeState] = useState<ToolMode>("draw");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [tableView, setTableView] = useState<TableView>("graph");
+  const [pixelSpacing, setPixelSpacing] = useState(40);
+  const [history, setHistory] = useState<string[]>([]);
+  const [connectFirst, setConnectFirst] = useState<Vertex | null>(null);
+  const [transform, setTransform] = useState<Transform>({
+    scale: 1,
+    tx: 0,
+    ty: 0,
+  });
+  const [preview, setPreview] = useState<PreviewLine | null>(null);
+  const [marquee, setMarquee] = useState<MarqueeRect | null>(null);
 
-  // ── Interaction Refs ──
-  const isDrawingRef = useRef(false)
-  const isDraggingRef = useRef(false)
-  const isPanningRef = useRef(false)
-  const isSelectingRef = useRef(false)
-  const interactStartRef = useRef<{ x: number; y: number; tx?: number; ty?: number } | null>(null)
-  const snapStartRef = useRef<Vertex | null>(null)
+  // Image Cropping Feature State
+  const [focusFrom, setFocusFrom] = useState<string>("");
+  const [focusTo, setFocusTo] = useState<string>("");
+  const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  const [isGeneratingImg, setIsGeneratingImg] = useState(false);
+  const [displayImgUrl, setDisplayImgUrl] = useState<string | null>(null);
 
-  // ── Mutable Refs (avoid stale closures in window event handlers) ──
-  const vRef = useRef(vertices)
-  const eRef = useRef(edges)
-  const selRef = useRef(selectedIds)
-  const gcRef = useRef(globalCounter)
-  const modeRef = useRef(mode)
-  const prefixRef = useRef(idPrefix)
-  const spacingRef = useRef(pixelSpacing)
-  const txRef = useRef(transform)
-  const cfRef = useRef(connectFirst)
-  const histRef = useRef(history)
-  const svgRef = useRef<SVGSVGElement>(null)
-  const vpRef = useRef<HTMLDivElement>(null)
+  const isDrawingRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const isPanningRef = useRef(false);
+  const isSelectingRef = useRef(false);
+  const interactStartRef = useRef<{
+    x: number;
+    y: number;
+    tx?: number;
+    ty?: number;
+  } | null>(null);
+  const snapStartRef = useRef<Vertex | null>(null);
 
-  useEffect(() => { vRef.current = vertices }, [vertices])
-  useEffect(() => { eRef.current = edges }, [edges])
-  useEffect(() => { selRef.current = selectedIds }, [selectedIds])
-  useEffect(() => { gcRef.current = globalCounter }, [globalCounter])
-  useEffect(() => { modeRef.current = mode }, [mode])
-  useEffect(() => { prefixRef.current = idPrefix }, [idPrefix])
-  useEffect(() => { spacingRef.current = pixelSpacing }, [pixelSpacing])
-  useEffect(() => { txRef.current = transform }, [transform])
-  useEffect(() => { cfRef.current = connectFirst }, [connectFirst])
-  useEffect(() => { histRef.current = history }, [history])
+  const vRef = useRef(vertices);
+  const eRef = useRef(edges);
+  const selRef = useRef(selectedIds);
+  const modeRef = useRef(mode);
+  const spacingRef = useRef(pixelSpacing);
+  const txRef = useRef(transform);
+  const cfRef = useRef(connectFirst);
+  const histRef = useRef(history);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const vpRef = useRef<HTMLDivElement>(null);
 
-  // ── Load from localStorage ──
   useEffect(() => {
-    const { data, svgContent: svg } = loadUserData(user)
-    if (data) {
-      setVertices(data.vertices ?? [])
-      setEdges(data.edges ?? [])
-      setGlobalCounter(data.globalCounter ?? 1)
-      setCanvasW(data.canvasW ?? 1500)
-      setCanvasH(data.canvasH ?? 1000)
+    vRef.current = vertices;
+  }, [vertices]);
+  useEffect(() => {
+    eRef.current = edges;
+  }, [edges]);
+  useEffect(() => {
+    selRef.current = selectedIds;
+  }, [selectedIds]);
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
+  useEffect(() => {
+    spacingRef.current = pixelSpacing;
+  }, [pixelSpacing]);
+  useEffect(() => {
+    txRef.current = transform;
+  }, [transform]);
+  useEffect(() => {
+    cfRef.current = connectFirst;
+  }, [connectFirst]);
+  useEffect(() => {
+    histRef.current = history;
+  }, [history]);
+
+  // 1. Load Data from Backend
+  useEffect(() => {
+    fetch(`${API_URL}/api/maps/${projectId}`, { headers: getAuthHeaders() })
+      .then((res) => res.json())
+      .then((data) => {
+        // Add these lines to set canvas dimensions from the map data
+        if (data.canvasW) setCanvasW(data.canvasW);
+        if (data.canvasH) setCanvasH(data.canvasH);
+
+        if (data.vertices) {
+          setVertices(data.vertices);
+          setOriginalVertices(data.vertices);
+
+          const importedEdges: Edge[] = [];
+          const seenEdges = new Set<string>();
+          data.vertices.forEach((v: Vertex) => {
+            if (Array.isArray(v.connection)) {
+              v.connection.forEach((targetId: string) => {
+                const [a, b] = [v.id, targetId].sort();
+                const edgeId = `${a}_to_${b}`;
+                if (!seenEdges.has(edgeId)) {
+                  seenEdges.add(edgeId);
+                  importedEdges.push({ id: edgeId, from: a, to: b });
+                }
+              });
+            }
+          });
+          setEdges(importedEdges);
+        }
+        if (data.svgUrl) setSvgUrl(data.svgUrl);
+      })
+      .catch(console.error);
+  }, [projectId]);
+
+  // 2. Sync Batch Data to Backend
+  async function syncToServer() {
+    setIsSaving(true);
+    try {
+      // 1. Prepare Spatial Graph Data (All nodes)
+      const graphPayload = vertices.map((v) => ({
+        id: v.id,
+        type: v.type,
+        connection: edges
+          .filter((e) => e.from === v.id || e.to === v.id)
+          .map((e) => (e.from === v.id ? e.to : e.from)),
+        cx: v.cx,
+        cy: v.cy,
+      }));
+
+      const metadataPayload = vertices
+        .filter((v) => {
+          if (v.type === "room") return true; // Rooms always get a metadata entry
+
+          // Junctions only get an entry if they have content
+          const hasContent =
+            (v.label && v.label.trim() !== "") ||
+            (v.description_id && v.description_id.trim() !== "") ||
+            (v.description_en && v.description_en.trim() !== "");
+
+          return v.type === "junction" && hasContent;
+        })
+        .map((v) => ({
+          id: v.id,
+          type: v.type,
+          slug: v.slug || "",
+          label: v.label || "",
+          floor: String(v.floor || ""),
+          wings: v.wings || "",
+          "room-type": v["room-type"] || (v.type === "room" ? "PUBLIC" : null),
+          keywords: v.keywords || "",
+          aliases: v.aliases || "",
+          description_id: v.description_id || "",
+          description_en: v.description_en || "",
+        }));
+
+      // 3. Execute Parallel Sync
+      const [gRes, rRes] = await Promise.all([
+        fetch(`${API_URL}/api/maps/${projectId}/graph`, {
+          method: "PUT",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ graph: graphPayload }), // Sending as object
+        }),
+        fetch(`${API_URL}/api/maps/${projectId}/rooms`, {
+          method: "PUT",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ rooms: metadataPayload }), // Sending as object
+        }),
+      ]);
+
+      if (!gRes.ok || !rRes.ok)
+        throw new Error("Sync failed on one or more endpoints.");
+
+      setOriginalVertices([...vertices]);
+      alert("✅ Map Synced! Spatial and Metadata stored separately.");
+    } catch (err: any) {
+      console.error(err);
+      alert("Failed to sync: " + err.message);
+    } finally {
+      setIsSaving(false);
     }
-    if (svg) setSvgContent(svg)
-  }, [user])
+  }
 
-  // ── Auto-save to localStorage ──
+  // 3. Handle Map Upload
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("svgFile", file); // Keep key as 'svgFile' to match backend
+
+    try {
+      const res = await fetch(`${API_URL}/api/maps/${projectId}/svg`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("fp_token")}`,
+        },
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data.url) {
+        setSvgUrl(data.url);
+        // IMPORTANT: Update the canvas dimensions in real-time
+        if (data.canvasW) setCanvasW(data.canvasW);
+        if (data.canvasH) setCanvasH(data.canvasH);
+      }
+    } catch (err) {
+      alert("Failed to upload image");
+    }
+    e.target.value = "";
+  }
+
+  // Update this effect to fetch the protected image whenever croppedImage changes
   useEffect(() => {
-    saveUserData(user, { vertices, edges, globalCounter, canvasW, canvasH }, svgContent)
-  }, [user, vertices, edges, globalCounter, canvasW, canvasH, svgContent])
+    async function fetchSecureImage() {
+      if (!croppedImage) {
+        setDisplayImgUrl(null);
+        return;
+      }
 
-  // ── Keyboard shortcuts ──
+      try {
+        const response = await fetch(croppedImage, {
+          headers: getAuthHeaders(), // Use your JWT headers here
+        });
+
+        if (!response.ok) throw new Error("Could not fetch protected image");
+
+        const blob = await response.blob();
+        const localUrl = URL.createObjectURL(blob);
+        setDisplayImgUrl(localUrl);
+      } catch (err) {
+        console.error("Image load error:", err);
+      }
+    }
+
+    fetchSecureImage();
+
+    // Cleanup the blob URL when the component unmounts or image changes
+    return () => {
+      if (displayImgUrl) URL.revokeObjectURL(displayImgUrl);
+    };
+  }, [croppedImage]);
+
+  // Exports via API
+  function triggerExport(type: "graph" | "db") {
+    fetch(`${API_URL}/api/maps/${projectId}/export/${type}`, {
+      headers: getAuthHeaders(),
+    })
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `export_${type}.json`;
+        a.click();
+      });
+  }
+
+  // ─────────────────────────────────────────────
+  // GENERATE CROPPED IMAGE LOGIC (API CALL)
+  // ─────────────────────────────────────────────
+  async function generateCroppedImage() {
+    if (!focusFrom || !focusTo) return;
+    setIsGeneratingImg(true);
+
+    try {
+      const res = await fetch(`${API_URL}/api/maps/${projectId}/crop`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          from: focusFrom, // Start Node ID
+          to: focusTo, // End Node ID
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Generation failed");
+
+      // The backend now returns a URL to a protected route in the new collection
+      setCroppedImage(data.url || data.data?.url);
+    } catch (err: any) {
+      console.error(err);
+      alert("Failed to generate image: " + err.message);
+    } finally {
+      setIsGeneratingImg(false);
+    }
+  }
+
+  // CROSS-ORIGIN DOWNLOAD FIX
+  async function downloadCroppedImage() {
+    if (!croppedImage) return;
+    try {
+      const response = await fetch(croppedImage, {
+        headers: getAuthHeaders(), // Include JWT for the protected route
+      });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `route-map.png`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download failed", err);
+      alert("Failed to download image file.");
+    }
+  }
+
+  // Canvas Interaction Handlers
   useEffect(() => {
-    const h = (e: KeyboardEvent) => { if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo() } }
-    window.addEventListener('keydown', h)
-    return () => window.removeEventListener('keydown', h)
-  }, [])
-
-  // ─── Utility ───
+    const h = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "z") {
+        e.preventDefault();
+        undo();
+      }
+    };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, []);
 
   function getCoords(e: MouseEvent): Point {
-    if (!svgRef.current) return { x: 0, y: 0 }
-    const rect = svgRef.current.getBoundingClientRect()
-    const s = txRef.current.scale
-    return { x: (e.clientX - rect.left) / s, y: (e.clientY - rect.top) / s }
+    if (!svgRef.current) return { x: 0, y: 0 };
+    const rect = svgRef.current.getBoundingClientRect();
+    const s = txRef.current.scale;
+    return { x: (e.clientX - rect.left) / s, y: (e.clientY - rect.top) / s };
   }
 
   function findNear(pt: Point, vs?: Vertex[]): Vertex | undefined {
-    const threshold = 20 / txRef.current.scale
-    return (vs ?? vRef.current).find(v => Math.hypot(v.cx - pt.x, v.cy - pt.y) < threshold)
+    const threshold = 20 / txRef.current.scale;
+    return (vs ?? vRef.current).find(
+      (v) => Math.hypot(v.cx - pt.x, v.cy - pt.y) < threshold,
+    );
   }
 
   function captureHistory() {
-    const snap = JSON.stringify({ vertices: vRef.current, edges: eRef.current, globalCounter: gcRef.current })
-    setHistory(prev => { const n = [...prev, snap]; return n.length > 50 ? n.slice(-50) : n })
+    const snap = JSON.stringify({
+      vertices: vRef.current,
+      edges: eRef.current,
+    });
+    setHistory((prev) => {
+      const n = [...prev, snap];
+      return n.length > 50 ? n.slice(-50) : n;
+    });
   }
 
   function undo() {
-    if (histRef.current.length === 0) return
-    const last = histRef.current[histRef.current.length - 1]
-    const s = JSON.parse(last)
-    setVertices(s.vertices)
-    setEdges(s.edges)
-    setGlobalCounter(s.globalCounter)
-    setSelectedIds([])
-    setHistory(p => p.slice(0, -1))
+    if (histRef.current.length === 0) return;
+    const last = histRef.current[histRef.current.length - 1];
+    const s = JSON.parse(last);
+    setVertices(s.vertices);
+    setEdges(s.edges);
+    setSelectedIds([]);
+    isDraggingRef.current = false;
+    isDrawingRef.current = false;
+    setHistory((p) => p.slice(0, -1));
   }
-
-  // ─── Pan & Zoom ───
 
   function handleWheel(e: React.WheelEvent) {
-    e.preventDefault()
-    const d = e.deltaY > 0 ? 0.9 : 1.1
-    setTransform(prev => {
-      if (e.ctrlKey) {
-        const ns = Math.min(Math.max(prev.scale * d, 0.05), 20)
-        const r = vpRef.current!.getBoundingClientRect()
-        const mx = e.clientX - r.left, my = e.clientY - r.top
-        return { scale: ns, tx: mx - (mx - prev.tx) * (ns / prev.scale), ty: my - (my - prev.ty) * (ns / prev.scale) }
+    e.preventDefault();
+    const d = e.deltaY > 0 ? 0.9 : 1.1;
+    setTransform((prev) => {
+      if (e.ctrlKey || e.metaKey) {
+        const ns = Math.min(Math.max(prev.scale * d, 0.05), 20);
+        const r = vpRef.current!.getBoundingClientRect();
+        const mx = e.clientX - r.left,
+          my = e.clientY - r.top;
+        return {
+          scale: ns,
+          tx: mx - (mx - prev.tx) * (ns / prev.scale),
+          ty: my - (my - prev.ty) * (ns / prev.scale),
+        };
       }
-      return { ...prev, tx: prev.tx - e.deltaX, ty: prev.ty - e.deltaY }
-    })
+      return { ...prev, tx: prev.tx - e.deltaX, ty: prev.ty - e.deltaY };
+    });
   }
-
-  // ─── Mouse Down on SVG ───
 
   function handleMouseDown(e: React.MouseEvent<SVGSVGElement>) {
-    // Middle mouse → pan
     if (e.button === 1) {
-      isPanningRef.current = true
-      interactStartRef.current = { x: e.clientX, y: e.clientY, tx: txRef.current.tx, ty: txRef.current.ty }
-      e.preventDefault()
-      return
+      isPanningRef.current = true;
+      interactStartRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        tx: txRef.current.tx,
+        ty: txRef.current.ty,
+      };
+      e.preventDefault();
+      return;
     }
-    if (e.button !== 0) return
+    if (e.button !== 0) return;
 
-    const pt = getCoords(e.nativeEvent)
-    const hit = findNear(pt)
-    const m = modeRef.current
+    const pt = getCoords(e.nativeEvent);
+    const hit = findNear(pt);
+    const m = modeRef.current;
 
-    if (m === 'select') {
+    if (m === "select") {
       if (hit) {
+        // CAPTURE HISTORY HERE: Before the drag starts
+        captureHistory();
+
         if (!e.shiftKey) {
-          if (!selRef.current.includes(hit.id)) setSelectedIds([hit.id])
+          if (!selRef.current.includes(hit.id)) setSelectedIds([hit.id]);
         } else {
-          setSelectedIds(p => p.includes(hit.id) ? p.filter(x => x !== hit.id) : [...p, hit.id])
+          setSelectedIds((p) =>
+            p.includes(hit.id) ? p.filter((x) => x !== hit.id) : [...p, hit.id],
+          );
         }
-        isDraggingRef.current = true
-        interactStartRef.current = pt
+        isDraggingRef.current = true;
+        interactStartRef.current = pt;
       } else {
-        isSelectingRef.current = true
-        interactStartRef.current = pt
-        setSelectedIds([])
-        setMarquee({ x: pt.x, y: pt.y, w: 0, h: 0 })
+        isSelectingRef.current = true;
+        interactStartRef.current = pt;
+        setSelectedIds([]);
+        setMarquee({ x: pt.x, y: pt.y, w: 0, h: 0 });
       }
-    } else if (m === 'connect') {
-      if (!hit) return
+    } else if (m === "connect") {
+      if (!hit) return;
       if (!cfRef.current) {
-        setConnectFirst(hit)
+        setConnectFirst(hit);
       } else if (cfRef.current.id !== hit.id) {
-        captureHistory()
-        const eid = `${cfRef.current.id}_to_${hit.id}`
-        if (!eRef.current.some(e2 => e2.id === eid)) {
-          setEdges(p => [...p, { id: eid, from: cfRef.current!.id, to: hit.id }])
+        captureHistory();
+        const [a, b] = [cfRef.current.id, hit.id].sort();
+        const eid = `${a}_to_${b}`;
+        if (!eRef.current.some((e2) => e2.id === eid)) {
+          setEdges((p) => [...p, { id: eid, from: a, to: b }]);
         }
-        setConnectFirst(null)
+        setConnectFirst(null);
       }
-    } else if (m === 'room' || m === 'junction') {
-      captureHistory()
-      const nid = `${prefixRef.current}${m === 'room' ? 'v' : 'j'}${gcRef.current}`
-      setGlobalCounter(c => c + 1)
-      setVertices(p => [...p, {
-        id: nid, type: m as NodeType, label: null, objectName: null,
-        categoryId: 'PUBLIC', aliases: [], cx: Math.round(pt.x), cy: Math.round(pt.y),
-      }])
-    } else if (m === 'draw') {
-      isDrawingRef.current = true
-      snapStartRef.current = hit ?? null
-      const sp = hit ? { x: hit.cx, y: hit.cy } : pt
-      interactStartRef.current = sp
-      setPreview({ x1: sp.x, y1: sp.y, x2: sp.x, y2: sp.y })
+    } else if (m === "room" || m === "junction") {
+      captureHistory();
+      const nid = generateUid();
+      setVertices((p) => [
+        ...p,
+        {
+          id: nid,
+          type: m as NodeType,
+          slug: generateSlug("1", "Main", null, m as NodeType, nid),
+          floor: "1",
+          wings: "Main",
+          label: null,
+          description_id: null,
+          description_en: null,
+          "room-type": m === "room" ? "PUBLIC" : null,
+          keywords: null,
+          aliases: null,
+          connection: [],
+          cx: Math.round(pt.x),
+          cy: Math.round(pt.y),
+        },
+      ]);
+    } else if (m === "draw") {
+      isDrawingRef.current = true;
+      snapStartRef.current = hit ?? null;
+      const sp = hit ? { x: hit.cx, y: hit.cy } : pt;
+      interactStartRef.current = sp;
+      setPreview({ x1: sp.x, y1: sp.y, x2: sp.x, y2: sp.y });
     }
   }
-
-  // ─── Global Mouse Move / Up ───
 
   useEffect(() => {
     function onMove(e: MouseEvent) {
       if (isPanningRef.current && interactStartRef.current) {
-        const { x: sx, y: sy, tx: stx = 0, ty: sty = 0 } = interactStartRef.current
-        setTransform(p => ({ ...p, tx: stx + (e.clientX - sx), ty: sty + (e.clientY - sy) }))
-        return
+        const {
+          x: sx,
+          y: sy,
+          tx: stx = 0,
+          ty: sty = 0,
+        } = interactStartRef.current;
+        setTransform((p) => ({
+          ...p,
+          tx: stx + (e.clientX - sx),
+          ty: sty + (e.clientY - sy),
+        }));
+        return;
       }
-      if (!svgRef.current) return
-      const pt = getCoords(e)
+      if (!svgRef.current) return;
+      const pt = getCoords(e);
 
-      if (isDraggingRef.current && selRef.current.length > 0 && interactStartRef.current) {
-        const dx = Math.round(pt.x - interactStartRef.current.x)
-        const dy = Math.round(pt.y - interactStartRef.current.y)
+      if (
+        isDraggingRef.current &&
+        selRef.current.length > 0 &&
+        interactStartRef.current
+      ) {
+        const dx = Math.round(pt.x - interactStartRef.current.x);
+        const dy = Math.round(pt.y - interactStartRef.current.y);
         if (dx !== 0 || dy !== 0) {
-          setVertices(p => p.map(v => selRef.current.includes(v.id) ? { ...v, cx: v.cx + dx, cy: v.cy + dy } : v))
-          interactStartRef.current = pt
+          setVertices((p) =>
+            p.map((v) =>
+              selRef.current.includes(v.id)
+                ? { ...v, cx: v.cx + dx, cy: v.cy + dy }
+                : v,
+            ),
+          );
+          interactStartRef.current = pt;
         }
       } else if (isSelectingRef.current && interactStartRef.current) {
-        const sx = interactStartRef.current.x, sy = interactStartRef.current.y
-        const x = Math.min(sx, pt.x), y = Math.min(sy, pt.y)
-        const w = Math.abs(sx - pt.x), h = Math.abs(sy - pt.y)
-        setMarquee({ x, y, w, h })
-        setSelectedIds(vRef.current.filter(v => v.cx >= x && v.cx <= x + w && v.cy >= y && v.cy <= y + h).map(v => v.id))
+        const sx = interactStartRef.current.x,
+          sy = interactStartRef.current.y;
+        const x = Math.min(sx, pt.x),
+          y = Math.min(sy, pt.y);
+        const w = Math.abs(sx - pt.x),
+          h = Math.abs(sy - pt.y);
+        setMarquee({ x, y, w, h });
+        setSelectedIds(
+          vRef.current
+            .filter(
+              (v) => v.cx >= x && v.cx <= x + w && v.cy >= y && v.cy <= y + h,
+            )
+            .map((v) => v.id),
+        );
       } else if (isDrawingRef.current) {
-        const snap = findNear(pt)
-        setPreview(p => p ? { ...p, x2: snap ? snap.cx : pt.x, y2: snap ? snap.cy : pt.y } : null)
+        const snap = findNear(pt);
+        setPreview((p) =>
+          p
+            ? { ...p, x2: snap ? snap.cx : pt.x, y2: snap ? snap.cy : pt.y }
+            : null,
+        );
       }
     }
 
     function onUp(e: MouseEvent) {
-      isPanningRef.current = false
+      isPanningRef.current = false;
       if (isDrawingRef.current) {
-        isDrawingRef.current = false
+        isDrawingRef.current = false;
         if (svgRef.current && interactStartRef.current) {
-          const pt = getCoords(e)
-          const snap = findNear(pt)
-          const sp = interactStartRef.current
-          const ep = snap ? { x: snap.cx, y: snap.cy } : pt
+          const pt = getCoords(e);
+          const snap = findNear(pt);
+          const sp = interactStartRef.current;
+          const ep = snap ? { x: snap.cx, y: snap.cy } : pt;
           if (Math.hypot(ep.x - sp.x, ep.y - sp.y) > 5) {
-            captureHistory()
-            createPath(sp, ep, snapStartRef.current, snap ?? null)
+            captureHistory();
+            createPath(sp, ep, snapStartRef.current, snap ?? null);
           }
         }
-        setPreview(null)
+        setPreview(null);
       }
-      isDraggingRef.current = false
-      isSelectingRef.current = false
-      setMarquee(null)
+      isDraggingRef.current = false;
+      isSelectingRef.current = false;
+      setMarquee(null);
     }
 
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseup', onUp)
-    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
-  }, [])
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, []);
 
-  // ─── Create Path (draw mode) ───
+  function createPath(
+    p1: Point,
+    p2: Point,
+    sNode: Vertex | null,
+    eNode: Vertex | null,
+  ) {
+    const interval = spacingRef.current || 40;
+    const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+    const count = Math.max(2, Math.floor(dist / interval));
 
-  function createPath(p1: Point, p2: Point, sNode: Vertex | null, eNode: Vertex | null) {
-    const interval = spacingRef.current || 40
-    const prefix = prefixRef.current
-    const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y)
-    const count = Math.max(2, Math.floor(dist / interval))
-
-    let ctr = gcRef.current
-    const newVerts: Vertex[] = []
-    const newEdges: Edge[] = []
-    const seg: Vertex[] = []
+    const newVerts: Vertex[] = [];
+    const newEdges: Edge[] = [];
+    const seg: Vertex[] = [];
 
     for (let i = 0; i < count; i++) {
-      if (i === 0 && sNode) { seg.push(sNode); continue }
-      if (i === count - 1 && eNode) { seg.push(eNode); continue }
-      const t = i / (count - 1)
+      if (i === 0 && sNode) {
+        seg.push(sNode);
+        continue;
+      }
+      if (i === count - 1 && eNode) {
+        seg.push(eNode);
+        continue;
+      }
+      const t = i / (count - 1);
+      const jid = generateUid();
       const nv: Vertex = {
-        id: `${prefix}j${ctr++}`, type: 'junction', label: null, objectName: null,
-        categoryId: null, aliases: [],
+        id: jid,
+        type: "junction",
+        slug: generateSlug("1", "Main", null, "junction", jid),
+        floor: "1",
+        wings: "Main",
+        label: null,
+        description: null,
+        "room-type": null,
+        keywords: null,
+        aliases: null,
+        connection: [],
         cx: Math.round(p1.x + (p2.x - p1.x) * t),
         cy: Math.round(p1.y + (p2.y - p1.y) * t),
-      }
-      newVerts.push(nv); seg.push(nv)
+      };
+      newVerts.push(nv);
+      seg.push(nv);
     }
 
     for (let i = 0; i < seg.length - 1; i++) {
-      newEdges.push({ id: `${seg[i].id}_to_${seg[i + 1].id}`, from: seg[i].id, to: seg[i + 1].id })
+      const [a, b] = [seg[i].id, seg[i + 1].id].sort();
+      newEdges.push({ id: `${a}_to_${b}`, from: a, to: b });
     }
 
-    setGlobalCounter(ctr)
-    setVertices(p => [...p, ...newVerts])
-    setEdges(p => [...p, ...newEdges])
+    setVertices((p) => [...p, ...newVerts]);
+    setEdges((p) => [...p, ...newEdges]);
   }
 
-  // ─── Node Property Updates ───
-
   function liveUpdate(field: string, value: string) {
-    if (selectedIds.length === 0) return
+    if (selectedIds.length === 0) return;
+
     if (selectedIds.length === 1) {
-      const id = selectedIds[0]
-      if (field === 'id') {
-        const nid = value.trim()
-        if (!nid || nid === id) return
-        setVertices(p => p.map(v => v.id === id ? { ...v, id: nid } : v))
-        setEdges(p => p.map(e => ({ ...e, from: e.from === id ? nid : e.from, to: e.to === id ? nid : e.to })))
-        setSelectedIds([nid])
-      } else if (field === 'aliases') {
-        const arr = value.split(',').map(s => s.trim()).filter(Boolean)
-        setVertices(p => p.map(v => v.id === id ? { ...v, aliases: arr } : v))
-      } else {
-        setVertices(p => p.map(v => v.id === id ? { ...v, [field]: value || null } : v))
-      }
+      const id = selectedIds[0];
+      setVertices((p) =>
+        p.map((v) => {
+          if (v.id === id) {
+            const updated = { ...v, [field]: value || null };
+            if (field === "floor" || field === "wings" || field === "label") {
+              updated.slug = generateSlug(
+                updated.floor,
+                updated.wings,
+                updated.label,
+                updated.type,
+                updated.id,
+              );
+            }
+            return updated;
+          }
+          return v;
+        }),
+      );
     } else {
-      if (field === 'type' || field === 'categoryId') {
-        setVertices(p => p.map(v => selectedIds.includes(v.id) ? { ...v, [field]: value } : v))
+      if (
+        field === "type" ||
+        field === "room-type" ||
+        field === "floor" ||
+        field === "wings"
+      ) {
+        setVertices((p) =>
+          p.map((v) => {
+            if (selectedIds.includes(v.id)) {
+              const updated = { ...v, [field]: value || null };
+              if (field === "floor" || field === "wings") {
+                updated.slug = generateSlug(
+                  updated.floor,
+                  updated.wings,
+                  updated.label,
+                  updated.type,
+                  updated.id,
+                );
+              }
+              return updated;
+            }
+            return v;
+          }),
+        );
       }
     }
   }
 
   function deleteSelected() {
-    if (selectedIds.length === 0) return
-    captureHistory()
-    setVertices(p => p.filter(v => !selectedIds.includes(v.id)))
-    setEdges(p => p.filter(e => !selectedIds.includes(e.from) && !selectedIds.includes(e.to)))
-    setSelectedIds([])
+    if (selectedIds.length === 0) return;
+    captureHistory();
+    setVertices((p) => p.filter((v) => !selectedIds.includes(v.id)));
+    setEdges((p) =>
+      p.filter(
+        (e) => !selectedIds.includes(e.from) && !selectedIds.includes(e.to),
+      ),
+    );
+    setSelectedIds([]);
   }
 
-  // ─── Import / Export ───
-
-  function importSVG(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]; if (!file) return
-    const r = new FileReader()
-    r.onload = ev => {
-      const text = ev.target?.result as string
-      setSvgContent(text)
-      const doc = new DOMParser().parseFromString(text, 'image/svg+xml')
-      const el = doc.querySelector('svg')
-      setCanvasW(parseInt(el?.getAttribute('width') ?? '0') || 1500)
-      setCanvasH(parseInt(el?.getAttribute('height') ?? '0') || 1000)
-    }
-    r.readAsText(file); e.target.value = ''
+  function setMode(m: ToolMode) {
+    setModeState(m);
+    setConnectFirst(null);
   }
-
-  function importJSON(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]; if (!file) return
-    const r = new FileReader()
-    r.onload = ev => {
-      const data = JSON.parse(ev.target?.result as string)
-      setVertices(data.vertices ?? [])
-      setEdges(data.edges ?? [])
-      const nums = (data.vertices ?? []).map((v: Vertex) => { const m = v.id.match(/\d+/); return m ? parseInt(m[0]) : 0 })
-      setGlobalCounter(nums.length > 0 ? Math.max(...nums) + 1 : 1)
-      setSelectedIds([])
-    }
-    r.readAsText(file); e.target.value = ''
-  }
-
-  function dl(content: string, name: string) {
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(new Blob([content], { type: 'application/json' }))
-    a.download = name; a.click()
-  }
-
-  function exportGraph() {
-    dl(JSON.stringify({ vertices: vertices.map(v => ({ id: v.id, type: v.type, objectName: v.objectName, label: v.label, cx: v.cx, cy: v.cy })), edges }, null, 2), 'graph_navigation.json')
-  }
-
-  function exportDB() {
-    dl(JSON.stringify(vertices.filter(v => v.type === 'room').map(v => ({ id: v.id, label: v.objectName ?? v.id, category: (v.categoryId ?? 'PUBLIC').toUpperCase(), aliases: v.aliases ?? [], description: v.label ?? '' })), null, 2), 'rooms_database.json')
-  }
-
-  function setMode(m: ToolMode) { setModeState(m); setConnectFirst(null) }
 
   function handleRowClick(e: React.MouseEvent, v: Vertex) {
     if (e.shiftKey) {
-      setSelectedIds(p => p.includes(v.id) ? p.filter(x => x !== v.id) : [...p, v.id])
+      setSelectedIds((p) =>
+        p.includes(v.id) ? p.filter((x) => x !== v.id) : [...p, v.id],
+      );
     } else {
-      setSelectedIds([v.id])
+      setSelectedIds([v.id]);
     }
   }
 
-  const selectedNode = selectedIds.length === 1 ? vertices.find(v => v.id === selectedIds[0]) : null
+  // --- Handlers for manual JSON Import ---
+  function importJSON(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        if (Array.isArray(data)) {
+          const importedVertices: Vertex[] = data.map((v: any) => {
+            const tempId = v.id || generateUid();
+            return {
+              id: tempId,
+              type: v.type || "junction",
+              slug:
+                v.slug ||
+                generateSlug(
+                  v.floor || "1",
+                  v.wings || "Main",
+                  v.label ?? null,
+                  v.type || "junction",
+                  tempId,
+                ),
+              floor: v.floor || "1",
+              wings: v.wings || "Main",
+              label: v.label ?? null,
+              description_id: v.description_id ?? null,
+              description_en: v.description_en ?? null,
+              "room-type": v["room-type"] ?? v.categoryId ?? "PUBLIC",
+              keywords: v.keywords ?? null,
+              aliases: Array.isArray(v.aliases)
+                ? v.aliases.join(", ")
+                : v.aliases || null,
+              connection: v.connection || [],
+              cx: v.cx,
+              cy: v.cy,
+            };
+          });
 
-  // ─── Button style helper ───
+          const importedEdges: Edge[] = [];
+          const seenEdges = new Set<string>();
+          importedVertices.forEach((v) => {
+            if (Array.isArray(v.connection)) {
+              v.connection.forEach((targetId: string) => {
+                const [a, b] = [v.id, targetId].sort();
+                const edgeId = `${a}_to_${b}`;
+                if (!seenEdges.has(edgeId)) {
+                  seenEdges.add(edgeId);
+                  importedEdges.push({ id: edgeId, from: a, to: b });
+                }
+              });
+            }
+          });
+          setVertices(importedVertices);
+          setEdges(importedEdges);
+        } else {
+          alert("Invalid file format. Ensure it's an array.");
+        }
+        setSelectedIds([]);
+      } catch (err) {
+        alert("Failed to parse JSON file.");
+      }
+    };
+    r.readAsText(file);
+    e.target.value = "";
+  }
+
+  const selectedNode =
+    selectedIds.length === 1
+      ? vertices.find((v) => v.id === selectedIds[0])
+      : null;
+  const roomNodes = vertices.filter((v) => v.type === "room");
+
   function toolBtn(active: boolean): React.CSSProperties {
     return {
-      padding: '6px 11px', borderRadius: 7, cursor: 'pointer', fontWeight: 700,
-      fontSize: 12, fontFamily: 'inherit', border: 'none', transition: 'all 0.15s',
-      background: active ? '#3b82f6' : 'rgba(255,255,255,0.12)',
-      color: active ? 'white' : 'rgba(255,255,255,0.85)',
-      boxShadow: active ? '0 2px 8px rgba(59,130,246,0.5)' : 'none',
-    }
+      padding: "6px 11px",
+      borderRadius: 7,
+      cursor: "pointer",
+      fontWeight: 700,
+      fontSize: 12,
+      border: "none",
+      transition: "all 0.15s",
+      background: active ? "#3b82f6" : "rgba(255,255,255,0.12)",
+      color: active ? "white" : "rgba(255,255,255,0.85)",
+      boxShadow: active ? "0 2px 8px rgba(59,130,246,0.5)" : "none",
+    };
   }
 
-  const roomCount = vertices.filter(v => v.type === 'room').length
-  const junctCount = vertices.filter(v => v.type === 'junction').length
-
-  // ─────────────────────────── RENDER ───────────────────────────
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
-
-      {/* ── Toolbar ── */}
-      <div style={{
-        background: 'linear-gradient(90deg, #0f1c26 0%, #1a2f40 100%)',
-        padding: '10px 16px', display: 'flex', gap: 10, alignItems: 'center',
-        flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', zIndex: 10,
-        boxShadow: '0 2px 12px rgba(0,0,0,0.4)',
-      }}>
-
-        {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderRight: '1px solid rgba(255,255,255,0.12)', paddingRight: 14, marginRight: 2 }}>
-          <span style={{ fontSize: 20 }}>🗺️</span>
-          <span style={{ color: 'rgba(255,255,255,0.9)', fontWeight: 800, fontSize: 14, letterSpacing: '-0.3px' }}>Floorplan</span>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        overflow: "hidden",
+        fontFamily: "'Segoe UI', system-ui, sans-serif",
+      }}
+    >
+      {/* MODAL POPUP FOR CROPPED IMAGE */}
+      {croppedImage && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            background: "rgba(0,0,0,0.85)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          <div
+            style={{
+              background: "white",
+              padding: 30,
+              borderRadius: 16,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              maxWidth: "90%",
+              maxHeight: "90%",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+            }}
+          >
+            <h2 style={{ margin: "0 0 20px 0", color: "#0f172a" }}>
+              📸 Generated Route Map
+            </h2>
+            <div
+              style={{
+                background: "#f1f5f9",
+                borderRadius: 8,
+                padding: 10,
+                overflow: "hidden",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 20,
+              }}
+            >
+              <img
+                src={displayImgUrl || ""} // Use the local Blob URL here
+                alt="Cropped Route"
+                style={{
+                  border: "1px solid #cbd5e1",
+                  borderRadius: 4,
+                  maxWidth: "100%",
+                  maxHeight: "60vh",
+                  objectFit: "contain",
+                  background: "white",
+                  display: displayImgUrl ? "block" : "none", // Hide if not loaded
+                }}
+              />
+              {!displayImgUrl && (
+                <div style={{ color: "#64748b" }}>Loading secure image...</div>
+              )}
+            </div>
+            <div style={{ display: "flex", gap: 12, width: "100%" }}>
+              <button
+                onClick={downloadCroppedImage}
+                style={{
+                  flex: 1,
+                  padding: "12px 20px",
+                  background: "#10b981",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: 14,
+                }}
+              >
+                💾 Download High-Res PNG
+              </button>
+              <button
+                onClick={() => setCroppedImage(null)}
+                style={{
+                  padding: "12px 24px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: 14,
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
+      )}
 
-        {/* File group */}
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center', borderRight: '1px solid rgba(255,255,255,0.12)', paddingRight: 12 }}>
-          <button style={toolBtn(false)} onClick={() => document.getElementById('svg-inp')?.click()}>🖼️ Import SVG</button>
-          <button style={toolBtn(false)} onClick={() => document.getElementById('json-inp')?.click()}>📂 Import JSON</button>
-          <input id="svg-inp" type="file" accept=".svg" hidden onChange={importSVG} />
-          <input id="json-inp" type="file" accept=".json" hidden onChange={importJSON} />
-          {svgContent && (
-            <button onClick={() => setSvgContent('')}
-              style={{ ...toolBtn(false), background: 'rgba(239,68,68,0.2)', color: '#fca5a5' }}>
+      {/* Toolbar */}
+      <div
+        style={{
+          background: "linear-gradient(90deg, #0f1c26 0%, #1a2f40 100%)",
+          padding: "10px 16px",
+          display: "flex",
+          gap: 10,
+          alignItems: "center",
+          flexWrap: "wrap",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          zIndex: 100,
+          boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
+        }}
+      >
+        <button
+          onClick={onBack}
+          style={{
+            padding: "6px 10px",
+            background: "rgba(255,255,255,0.1)",
+            border: "none",
+            borderRadius: 6,
+            color: "white",
+            cursor: "pointer",
+            marginRight: 8,
+          }}
+        >
+          ← Back
+        </button>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 6,
+            alignItems: "center",
+            borderRight: "1px solid rgba(255,255,255,0.12)",
+            paddingRight: 12,
+          }}
+        >
+          <button
+            style={toolBtn(false)}
+            onClick={() => document.getElementById("img-inp")?.click()}
+          >
+            🖼️ Upload Background (PNG/SVG)
+          </button>
+          <input
+            id="img-inp"
+            type="file"
+            accept="image/png, image/jpeg, image/svg+xml" // Expanded filter
+            hidden
+            onChange={handleImageUpload}
+          />
+
+          <button
+            style={toolBtn(false)}
+            onClick={() => document.getElementById("json-inp")?.click()}
+          >
+            📂 Import Local JSON
+          </button>
+          <input
+            id="json-inp"
+            type="file"
+            accept=".json"
+            hidden
+            onChange={importJSON}
+          />
+
+          {svgUrl && (
+            <button
+              onClick={() => setSvgUrl(null)}
+              style={{
+                ...toolBtn(false),
+                background: "rgba(239,68,68,0.2)",
+                color: "#fca5a5",
+              }}
+            >
               🗑️ Clear BG
             </button>
           )}
         </div>
 
-        {/* Prefix + Spacing */}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', borderRight: '1px solid rgba(255,255,255,0.12)', paddingRight: 12 }}>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>PREFIX</span>
-          <input value={idPrefix} onChange={e => setIdPrefix(e.target.value)}
-            style={{ width: 68, padding: '5px 8px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.08)', color: 'white', fontSize: 12, fontFamily: 'inherit', outline: 'none' }} />
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>SPACING</span>
-          <input type="number" min={10} value={pixelSpacing} onChange={e => setPixelSpacing(parseInt(e.target.value) || 40)}
-            style={{ width: 52, padding: '5px 8px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.08)', color: 'white', fontSize: 12, fontFamily: 'inherit', outline: 'none' }} />
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            alignItems: "center",
+            borderRight: "1px solid rgba(255,255,255,0.12)",
+            paddingRight: 12,
+          }}
+        >
+          <span
+            style={{
+              fontSize: 11,
+              color: "rgba(255,255,255,0.5)",
+              fontWeight: 600,
+            }}
+          >
+            NODE DISTANCE (px)
+          </span>
+          <input
+            type="number"
+            min={10}
+            value={pixelSpacing}
+            onChange={(e) => setPixelSpacing(parseInt(e.target.value) || 40)}
+            style={{
+              width: 60,
+              padding: "5px 8px",
+              borderRadius: 6,
+              border: "1px solid rgba(255,255,255,0.15)",
+              background: "rgba(255,255,255,0.08)",
+              color: "white",
+              fontSize: 12,
+              outline: "none",
+            }}
+          />
         </div>
 
-        {/* Mode buttons */}
-        <div style={{ display: 'flex', gap: 5, alignItems: 'center', borderRight: '1px solid rgba(255,255,255,0.12)', paddingRight: 12 }}>
-          {([
-            ['draw', '✏️ Draw'],
-            ['room', '🏠 Room'],
-            ['junction', '🔵 Junction'],
-            ['connect', '🔗 Connect'],
-            ['select', '🖐️ Select'],
-          ] as [ToolMode, string][]).map(([id, label]) => (
-            <button key={id} onClick={() => setMode(id)} style={toolBtn(mode === id)}>{label}</button>
+        <div
+          style={{
+            display: "flex",
+            gap: 5,
+            alignItems: "center",
+            borderRight: "1px solid rgba(255,255,255,0.12)",
+            paddingRight: 12,
+          }}
+        >
+          {(
+            [
+              ["draw", "✏️ Draw"],
+              ["room", "🏠 Room"],
+              ["junction", "🔵 Junction"],
+              ["connect", "🔗 Connect"],
+              ["select", "🖐️ Select"],
+            ] as [ToolMode, string][]
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => setMode(id)}
+              style={toolBtn(mode === id)}
+            >
+              {label}
+            </button>
           ))}
         </div>
 
-        <button onClick={undo} title="Ctrl+Z" style={{ ...toolBtn(false), background: 'rgba(245,158,11,0.25)', color: '#fcd34d' }}>↩ Undo</button>
+        <button
+          onClick={undo}
+          title="Ctrl+Z"
+          style={{
+            ...toolBtn(false),
+            background: "rgba(245,158,11,0.25)",
+            color: "#fcd34d",
+          }}
+        >
+          ↩ Undo | Ctrl+Z
+        </button>
 
-        {/* Spacer + user info */}
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textAlign: 'right', lineHeight: 1.4 }}>
-            <div style={{ fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>👤 {user}</div>
-            <div>{vertices.length} nodes · {edges.length} edges</div>
-          </div>
-          <button onClick={onLogout}
-            style={{ padding: '6px 12px', background: 'rgba(239,68,68,0.2)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 7, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-            Sign Out
-          </button>
-        </div>
+        {/* Sync Data Button */}
+        <button
+          onClick={syncToServer}
+          disabled={isSaving}
+          style={{
+            marginLeft: "auto",
+            padding: "8px 16px",
+            background: isSaving ? "#9ca3af" : "#f59e0b",
+            color: "white",
+            border: "none",
+            borderRadius: 6,
+            fontWeight: "bold",
+            cursor: isSaving ? "not-allowed" : "pointer",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+          }}
+        >
+          {isSaving ? "⏳ Syncing..." : "☁️ Sync Changes to Server"}
+        </button>
       </div>
 
-      {/* ── Main Layout ── */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-
-        {/* ── Viewport / Canvas ── */}
-        <div ref={vpRef} onWheel={handleWheel}
-          style={{ flex: 1, background: '#1a2535', position: 'relative', overflow: 'hidden', touchAction: 'none' }}>
-
-          {/* Grid pattern on dark bg */}
-          <div style={{
-            position: 'absolute', inset: 0, opacity: 0.03,
-            backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
-            backgroundSize: '50px 50px', pointerEvents: 'none',
-          }} />
-
-          {/* Mode hint */}
-          <div style={{
-            position: 'absolute', bottom: 16, left: 16, zIndex: 5,
-            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
-            padding: '6px 12px', borderRadius: 8, fontSize: 11, color: 'rgba(255,255,255,0.7)',
-            border: '1px solid rgba(255,255,255,0.1)',
-          }}>
-            {mode === 'draw' && '✏️ Click+drag to draw paths — snap to existing nodes'}
-            {mode === 'room' && '🏠 Click anywhere to place a room node'}
-            {mode === 'junction' && '🔵 Click anywhere to place a junction'}
-            {mode === 'connect' && `🔗 ${connectFirst ? `Node "${connectFirst.id}" selected — click 2nd node` : 'Click first node to connect'}`}
-            {mode === 'select' && '🖐️ Click or drag marquee to select · Drag to move · Shift+click to multi-select'}
-          </div>
-
-          {/* Zoom info */}
-          <div style={{
-            position: 'absolute', bottom: 16, right: 16, zIndex: 5,
-            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
-            padding: '6px 10px', borderRadius: 8, fontSize: 11, color: 'rgba(255,255,255,0.6)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            display: 'flex', gap: 8, alignItems: 'center',
-          }}>
-            <span>Ctrl+Scroll zoom · Scroll pan · Middle drag pan</span>
-            <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: 4, color: 'rgba(255,255,255,0.8)', fontWeight: 700 }}>
-              {Math.round(transform.scale * 100)}%
-            </span>
-            <button onClick={() => setTransform({ scale: 1, tx: 0, ty: 0 })}
-              style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: 4, color: 'rgba(255,255,255,0.7)', cursor: 'pointer', padding: '2px 6px', fontSize: 11, fontFamily: 'inherit' }}>
-              Reset
-            </button>
-          </div>
-
-          {/* Pan-zoom wrapper */}
-          <div style={{
-            position: 'absolute', transformOrigin: '0 0', willChange: 'transform',
-            transform: `translate(${transform.tx}px,${transform.ty}px) scale(${transform.scale})`,
-          }}>
-            <div style={{
-              position: 'relative', background: 'white',
-              width: canvasW, height: canvasH,
-              boxShadow: '0 0 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1)',
-            }}>
-              {/* Background SVG layer */}
-              {svgContent && (
-                <div
-                  style={{ position: 'absolute', top: 0, left: 0, width: canvasW, height: canvasH, overflow: 'hidden', pointerEvents: 'none' }}
-                  dangerouslySetInnerHTML={{ __html: svgContent }}
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        {/* Canvas Viewport */}
+        <div
+          ref={vpRef}
+          onWheel={handleWheel}
+          style={{
+            flex: 1,
+            background: "#1a2535",
+            position: "relative",
+            overflow: "hidden",
+            touchAction: "none",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              opacity: 0.03,
+              backgroundImage:
+                "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+              backgroundSize: "50px 50px",
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              transformOrigin: "0 0",
+              willChange: "transform",
+              transform: `translate(${transform.tx}px,${transform.ty}px) scale(${transform.scale})`,
+            }}
+          >
+            <div
+              style={{
+                position: "relative",
+                background: "white",
+                width: canvasW,
+                height: canvasH,
+                boxShadow:
+                  "0 0 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1)",
+              }}
+            >
+              {svgUrl && (
+                <img
+                  src={svgUrl}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    pointerEvents: "none",
+                    objectFit: "contain", // Use 'contain' to see the whole PNG without distortion
+                    background: "#f0f0f0", // Optional: background for transparent PNGs
+                  }}
+                  alt="Map Background"
                 />
               )}
 
-              {/* Draw SVG layer */}
-              <svg ref={svgRef} style={{ position: 'absolute', top: 0, left: 0 }}
-                width={canvasW} height={canvasH} viewBox={`0 0 ${canvasW} ${canvasH}`}
-                onMouseDown={handleMouseDown}>
-
-                {/* Edges */}
-                {edges.map(edge => {
-                  const v1 = vertices.find(v => v.id === edge.from)
-                  const v2 = vertices.find(v => v.id === edge.to)
-                  if (!v1 || !v2) return null
+              <svg
+                ref={svgRef}
+                style={{ position: "absolute", top: 0, left: 0 }}
+                width={canvasW}
+                height={canvasH}
+                viewBox={`0 0 ${canvasW} ${canvasH}`}
+                onMouseDown={handleMouseDown}
+              >
+                {edges.map((edge) => {
+                  const v1 = vertices.find((v) => v.id === edge.from);
+                  const v2 = vertices.find((v) => v.id === edge.to);
+                  if (!v1 || !v2) return null;
                   return (
-                    <line key={edge.id} x1={v1.cx} y1={v1.cy} x2={v2.cx} y2={v2.cy}
-                      stroke="#1e293b" strokeWidth={3} opacity={0.35} strokeLinecap="round"
-                      style={{ cursor: mode === 'select' ? 'pointer' : 'default' }}
+                    <line
+                      key={edge.id}
+                      x1={v1.cx}
+                      y1={v1.cy}
+                      x2={v2.cx}
+                      y2={v2.cy}
+                      stroke="#1e293b"
+                      strokeWidth={3}
+                      opacity={0.35}
+                      strokeLinecap="round"
+                      style={{
+                        cursor: mode === "select" ? "pointer" : "default",
+                      }}
                       onClick={() => {
-                        if (modeRef.current !== 'select') return
-                        if (window.confirm(`Delete edge: ${edge.from} → ${edge.to}?`)) {
-                          captureHistory()
-                          setEdges(p => p.filter(x => x.id !== edge.id))
+                        if (
+                          modeRef.current === "select" &&
+                          window.confirm(`Delete edge?`)
+                        ) {
+                          captureHistory();
+                          setEdges((p) => p.filter((x) => x.id !== edge.id));
                         }
                       }}
                     />
-                  )
+                  );
                 })}
-
-                {/* Nodes */}
-                {vertices.map(v => {
-                  const sel = selectedIds.includes(v.id) || connectFirst?.id === v.id
-                  const isRoom = v.type === 'room'
+                {vertices.map((v) => {
+                  const sel =
+                    selectedIds.includes(v.id) || connectFirst?.id === v.id;
+                  const isRoom = v.type === "room";
                   return (
                     <g key={v.id}>
-                      <circle cx={v.cx} cy={v.cy} r={sel ? 11 : (isRoom ? 9 : 7)}
-                        fill={isRoom ? '#ef4444' : '#3b82f6'}
-                        stroke={sel ? '#fbbf24' : 'white'}
+                      <circle
+                        cx={v.cx}
+                        cy={v.cy}
+                        r={sel ? 11 : isRoom ? 9 : 7}
+                        fill={isRoom ? "#ef4444" : "#3b82f6"}
+                        stroke={sel ? "#fbbf24" : "white"}
                         strokeWidth={sel ? 3.5 : 2}
-                        style={{ cursor: 'pointer', transition: 'r 0.1s' }}
+                        style={{ cursor: "pointer" }}
                       />
-                      {/* Show label for rooms */}
-                      {isRoom && v.objectName && (
-                        <text x={v.cx} y={v.cy - 14} textAnchor="middle"
-                          fontSize={9} fill="#1e293b" fontWeight={600}
-                          style={{ pointerEvents: 'none', userSelect: 'none' }}>
-                          {v.objectName.length > 18 ? v.objectName.slice(0, 17) + '…' : v.objectName}
+                      {isRoom && v.label && (
+                        <text
+                          x={v.cx}
+                          y={v.cy - 14}
+                          textAnchor="middle"
+                          fontSize={9}
+                          fill="#1e293b"
+                          fontWeight={600}
+                          style={{ pointerEvents: "none", userSelect: "none" }}
+                        >
+                          {v.label.length > 18
+                            ? v.label.slice(0, 17) + "…"
+                            : v.label}
                         </text>
                       )}
                     </g>
-                  )
+                  );
                 })}
-
-                {/* Preview line */}
                 {preview && (
-                  <line x1={preview.x1} y1={preview.y1} x2={preview.x2} y2={preview.y2}
-                    stroke="#22c55e" strokeWidth={2} strokeDasharray="7,4" pointerEvents="none" />
+                  <line
+                    x1={preview.x1}
+                    y1={preview.y1}
+                    x2={preview.x2}
+                    y2={preview.y2}
+                    stroke="#22c55e"
+                    strokeWidth={2}
+                    strokeDasharray="7,4"
+                    pointerEvents="none"
+                  />
                 )}
-
-                {/* Marquee */}
                 {marquee && (
-                  <rect x={marquee.x} y={marquee.y} width={marquee.w} height={marquee.h}
-                    fill="rgba(59,130,246,0.08)" stroke="#3b82f6" strokeWidth={1} strokeDasharray="5,3" pointerEvents="none" />
+                  <rect
+                    x={marquee.x}
+                    y={marquee.y}
+                    width={marquee.w}
+                    height={marquee.h}
+                    fill="rgba(59,130,246,0.08)"
+                    stroke="#3b82f6"
+                    strokeWidth={1}
+                    strokeDasharray="5,3"
+                    pointerEvents="none"
+                  />
                 )}
               </svg>
             </div>
           </div>
         </div>
 
-        {/* ── Sidebar ── */}
-        <div style={{
-          width: 460, background: '#f8fafc', borderLeft: '1px solid #e2e8f0',
-          display: 'flex', flexDirection: 'column', zIndex: 10, overflow: 'hidden',
-        }}>
-          {/* Sidebar header */}
-          <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid #e2e8f0', background: 'white' }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.3px' }}>Node Properties</div>
-            <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
-              {roomCount} rooms · {junctCount} junctions · {edges.length} edges
+        {/* Sidebar */}
+        <div
+          style={{
+            width: 460,
+            background: "#f8fafc",
+            borderLeft: "1px solid #e2e8f0",
+            display: "flex",
+            flexDirection: "column",
+            zIndex: 10,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              padding: "14px 16px 10px",
+              borderBottom: "1px solid #e2e8f0",
+              background: "white",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ fontSize: 13, fontWeight: 800 }}>
+              Map Settings & Data
+            </div>
+            <div style={{ fontSize: 11, color: "#64748b" }}>
+              {vertices.length} Nodes
             </div>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: 14 }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: 14 }}>
+            {/* CROPPED IMAGE TOOL */}
+            <div
+              style={{
+                background: "white",
+                padding: 14,
+                borderRadius: 10,
+                marginBottom: 14,
+                border: "1px solid #e2e8f0",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 800,
+                  marginBottom: 8,
+                  color: "#0f172a",
+                  textTransform: "uppercase",
+                }}
+              >
+                📸 Crop Map View
+              </div>
+              <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                <select
+                  value={focusFrom}
+                  onChange={(e) => setFocusFrom(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: "6px",
+                    fontSize: 11,
+                    borderRadius: 4,
+                    border: "1px solid #cbd5e1",
+                    maxWidth: "50%",
+                  }}
+                >
+                  <option value="">Select From...</option>
+                  {roomNodes.map((v) => (
+                    <option key={`from-${v.id}`} value={v.id}>
+                      {v.label || v.slug || v.id}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={focusTo}
+                  onChange={(e) => setFocusTo(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: "6px",
+                    fontSize: 11,
+                    borderRadius: 4,
+                    border: "1px solid #cbd5e1",
+                    maxWidth: "50%",
+                  }}
+                >
+                  <option value="">Select To...</option>
+                  {roomNodes.map((v) => (
+                    <option key={`to-${v.id}`} value={v.id}>
+                      {v.label || v.slug || v.id}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={generateCroppedImage}
+                disabled={!focusFrom || !focusTo || isGeneratingImg}
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: 11,
+                  background: focusFrom && focusTo ? "#3b82f6" : "#e2e8f0",
+                  color: focusFrom && focusTo ? "white" : "#94a3b8",
+                  border: "none",
+                  borderRadius: 6,
+                  cursor: focusFrom && focusTo ? "pointer" : "not-allowed",
+                  fontWeight: 700,
+                }}
+              >
+                {isGeneratingImg
+                  ? "Generating Image on Server..."
+                  : "Generate High-Res PNG"}
+              </button>
+            </div>
 
-            {/* Properties form */}
+            {/* NODE PROPERTIES */}
             {selectedIds.length > 0 && (
-              <div style={{ background: 'white', border: '2px solid #3b82f6', borderRadius: 10, padding: 14, marginBottom: 14, boxShadow: '0 4px 16px rgba(59,130,246,0.1)' }}>
-
-                <div style={{ background: '#eff6ff', borderLeft: '3px solid #3b82f6', padding: '7px 11px', borderRadius: 6, fontSize: 11, color: '#1e40af', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>✓</span>
-                  <span><strong>{selectedIds.length}</strong> node{selectedIds.length > 1 ? 's' : ''} selected</span>
-                  {connectFirst && <span style={{ marginLeft: 'auto', color: '#dc2626', fontWeight: 700 }}>🔗 Click 2nd node</span>}
-                </div>
-
+              <div
+                style={{
+                  background: "white",
+                  border: "2px solid #3b82f6",
+                  borderRadius: 10,
+                  padding: 14,
+                  marginBottom: 14,
+                }}
+              >
                 {selectedNode && (
                   <>
-                    <PropField label="ID" value={selectedNode.id} onChange={v => liveUpdate('id', v)} placeholder="e.g. LT2-ROOM1" />
-                    <PropField label="Object Name (DB Label)" value={selectedNode.objectName ?? ''} onChange={v => liveUpdate('objectName', v)} placeholder="ENT / THT & General" />
-                    <PropField label="Display Label (DB Desc)" value={selectedNode.label ?? ''} onChange={v => liveUpdate('label', v)} placeholder="Klinik konsultasi spesialis..." />
+                    <div style={{ marginBottom: 10 }}>
+                      <label
+                        style={{
+                          display: "block",
+                          fontSize: 10,
+                          fontWeight: 700,
+                          color: "#94a3b8",
+                          textTransform: "uppercase",
+                          marginBottom: 4,
+                        }}
+                      >
+                        ID (Auto-generated UUID)
+                      </label>
+                      <div
+                        style={{
+                          width: "100%",
+                          padding: "7px 10px",
+                          border: "1px solid #e2e8f0",
+                          borderRadius: 7,
+                          fontSize: 11,
+                          background: "#f8fafc",
+                          color: "#64748b",
+                          boxSizing: "border-box",
+                          wordBreak: "break-all",
+                        }}
+                      >
+                        {selectedNode.id}
+                      </div>
+                    </div>
 
-                    {selectedNode.type === 'room' && (
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <div style={{ flex: 1 }}>
+                        <PropField
+                          label="Floor"
+                          value={selectedNode.floor ?? ""}
+                          onChange={(v) => liveUpdate("floor", v)}
+                          placeholder="e.g. 5"
+                        />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <PropField
+                          label="Wings"
+                          value={selectedNode.wings ?? ""}
+                          onChange={(v) => liveUpdate("wings", v)}
+                          placeholder="e.g. North"
+                        />
+                      </div>
+                    </div>
+
+                    <PropField
+                      label="Label (DB Name)"
+                      value={selectedNode.label ?? ""}
+                      onChange={(v) => liveUpdate("label", v)}
+                      placeholder="ENT / THT & General"
+                    />
+                    <PropField
+                      label="Slug (Auto-Generated)"
+                      value={selectedNode.slug ?? ""}
+                      onChange={(v) => liveUpdate("slug", v)}
+                    />
+                    <PropField
+                      label="Description (ID)"
+                      value={selectedNode.description_id ?? ""}
+                      onChange={(v) => liveUpdate("description_id", v)}
+                      placeholder="Deskripsi Bahasa Indonesia..."
+                    />
+                    <PropField
+                      label="Description (EN)"
+                      value={selectedNode.description_en ?? ""}
+                      onChange={(v) => liveUpdate("description_en", v)}
+                      placeholder="English Description..."
+                    />
+
+                    {selectedNode.type === "room" && (
                       <>
                         <div style={{ marginBottom: 10 }}>
-                          <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Category</label>
-                          <select value={selectedNode.categoryId ?? 'PUBLIC'} onChange={e => liveUpdate('categoryId', e.target.value)}
-                            style={{ width: '100%', padding: '7px 10px', border: '1px solid #e2e8f0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', outline: 'none', color: '#1e293b', background: 'white' }}>
-                            {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                          <label
+                            style={{
+                              display: "block",
+                              fontSize: 10,
+                              fontWeight: 700,
+                              color: "#94a3b8",
+                              textTransform: "uppercase",
+                              marginBottom: 4,
+                            }}
+                          >
+                            Room Type
+                          </label>
+                          <select
+                            value={selectedNode["room-type"] ?? "PUBLIC"}
+                            onChange={(e) =>
+                              liveUpdate("room-type", e.target.value)
+                            }
+                            style={{
+                              width: "100%",
+                              padding: "7px 10px",
+                              border: "1px solid #e2e8f0",
+                              borderRadius: 7,
+                            }}
+                          >
+                            {CATEGORIES.map((c) => (
+                              <option key={c} value={c}>
+                                {c}
+                              </option>
+                            ))}
                           </select>
                         </div>
-                        <PropField label="Aliases (comma separated)" value={(selectedNode.aliases ?? []).join(', ')} onChange={v => liveUpdate('aliases', v)} placeholder="alias1, alias2..." />
+                        <PropField
+                          label="Keywords (comma separated)"
+                          value={selectedNode.keywords ?? ""}
+                          onChange={(v) => liveUpdate("keywords", v)}
+                          placeholder="asuransi, rawat jalan..."
+                        />
+                        <PropField
+                          label="Aliases (comma separated)"
+                          value={selectedNode.aliases ?? ""}
+                          onChange={(v) => liveUpdate("aliases", v)}
+                          placeholder="dokter tht, obgyn..."
+                        />
                       </>
                     )}
-
-                    <div style={{ marginBottom: 10 }}>
-                      <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Node Type</label>
-                      <select value={selectedNode.type} onChange={e => liveUpdate('type', e.target.value)}
-                        style={{ width: '100%', padding: '7px 10px', border: '1px solid #e2e8f0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', outline: 'none', color: '#1e293b', background: 'white' }}>
-                        <option value="junction">Junction</option>
-                        <option value="room">Room</option>
-                      </select>
-                    </div>
                   </>
                 )}
-
-                {selectedIds.length > 1 && (
-                  <div style={{ marginBottom: 10 }}>
-                    <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Bulk change type</label>
-                    <select defaultValue="" onChange={e => e.target.value && liveUpdate('type', e.target.value)}
-                      style={{ width: '100%', padding: '7px 10px', border: '1px solid #e2e8f0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', outline: 'none', color: '#1e293b', background: 'white' }}>
-                      <option value="" disabled>Change all selected to...</option>
-                      <option value="junction">Junction</option>
-                      <option value="room">Room</option>
-                    </select>
-                  </div>
-                )}
-
-                <button onClick={deleteSelected}
-                  style={{ width: '100%', padding: '9px', background: '#ef4444', color: 'white', border: 'none', borderRadius: 7, cursor: 'pointer', fontWeight: 700, fontSize: 13, fontFamily: 'inherit', marginTop: 4 }}>
+                <button
+                  onClick={deleteSelected}
+                  style={{
+                    width: "100%",
+                    padding: "9px",
+                    background: "#ef4444",
+                    color: "white",
+                    border: "none",
+                    borderRadius: 7,
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    marginTop: 4,
+                  }}
+                >
                   🗑️ Delete Selection ({selectedIds.length})
                 </button>
               </div>
             )}
 
-            {/* Table toggle */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-                {tableView === 'graph' ? '📊 Graph View' : '🗄️ DB View'}
-              </span>
-              <button onClick={() => setTableView(v => v === 'graph' ? 'db' : 'graph')}
-                style={{ padding: '4px 10px', fontSize: 10, borderRadius: 6, border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 700, fontFamily: 'inherit', color: '#475569' }}>
-                {tableView === 'graph' ? 'Show DB View' : 'Show Graph View'}
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              <button
+                onClick={() => triggerExport("graph")}
+                style={{
+                  flex: 1,
+                  padding: "10px 8px",
+                  background: "linear-gradient(135deg, #22c55e, #16a34a)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontWeight: 700,
+                }}
+              >
+                📊 Download Graph API
+              </button>
+              <button
+                onClick={() => triggerExport("db")}
+                style={{
+                  flex: 1,
+                  padding: "10px 8px",
+                  background: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontWeight: 700,
+                }}
+              >
+                🗄️ Download DB API
               </button>
             </div>
 
-            {/* Data table */}
-            <div style={{ border: '1px solid #e2e8f0', borderRadius: 8, background: 'white', overflow: 'hidden', marginBottom: 12 }}>
-              <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr>
-                      {(tableView === 'graph'
-                        ? ['ID', 'Name', 'Label', 'Type', 'Coords']
-                        : ['ID', 'Category', 'Name', 'Aliases']
-                      ).map(h => (
-                        <th key={h} style={{ background: '#f1f5f9', padding: '7px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', position: 'sticky', top: 0, fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tableView === 'graph'
-                      ? vertices.map(v => (
-                        <tr key={v.id} onClick={e => handleRowClick(e as React.MouseEvent, v)}
-                          style={{ background: selectedIds.includes(v.id) ? '#fef9c3' : '', cursor: 'pointer' }}
-                          onMouseEnter={e => { if (!selectedIds.includes(v.id)) (e.currentTarget as HTMLTableRowElement).style.background = '#f8fafc' }}
-                          onMouseLeave={e => { if (!selectedIds.includes(v.id)) (e.currentTarget as HTMLTableRowElement).style.background = '' }}>
-                          <td style={{ ...TD, color: '#1e293b', fontWeight: 600 }}>{v.id}</td>
-                          <td style={TD}>{v.objectName ?? '—'}</td>
-                          <td style={TD}>{v.label ?? '—'}</td>
-                          <td style={TD}>
-                            <span style={{ padding: '2px 6px', borderRadius: 4, fontSize: 9, fontWeight: 700, background: v.type === 'room' ? '#fee2e2' : '#dbeafe', color: v.type === 'room' ? '#dc2626' : '#1d4ed8' }}>
-                              {v.type}
-                            </span>
-                          </td>
-                          <td style={TD}>{v.cx},{v.cy}</td>
-                        </tr>
-                      ))
-                      : vertices.filter(v => v.type === 'room').map(v => (
-                        <tr key={v.id} onClick={e => handleRowClick(e as React.MouseEvent, v)}
-                          style={{ background: selectedIds.includes(v.id) ? '#fef9c3' : '', cursor: 'pointer' }}
-                          onMouseEnter={e => { if (!selectedIds.includes(v.id)) (e.currentTarget as HTMLTableRowElement).style.background = '#f8fafc' }}
-                          onMouseLeave={e => { if (!selectedIds.includes(v.id)) (e.currentTarget as HTMLTableRowElement).style.background = '' }}>
-                          <td style={{ ...TD, color: '#1e293b', fontWeight: 600 }}>{v.id}</td>
-                          <td style={TD}>{v.categoryId ?? '—'}</td>
-                          <td style={TD}>{v.objectName ?? '—'}</td>
-                          <td style={TD}>{(v.aliases ?? []).join(', ') || '—'}</td>
-                        </tr>
-                      ))
-                    }
-                    {vertices.length === 0 && (
-                      <tr><td colSpan={5} style={{ textAlign: 'center', padding: '20px', color: '#94a3b8', fontSize: 12 }}>
-                        No nodes yet. Start drawing!
-                      </td></tr>
+            {/* Table Toggle */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+              <button
+                onClick={() => setTableView("graph")}
+                style={{
+                  flex: 1,
+                  padding: 6,
+                  fontSize: 11,
+                  background: tableView === "graph" ? "#e2e8f0" : "white",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                }}
+              >
+                View Graph Table
+              </button>
+              <button
+                onClick={() => setTableView("db")}
+                style={{
+                  flex: 1,
+                  padding: 6,
+                  fontSize: 11,
+                  background: tableView === "db" ? "#e2e8f0" : "white",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                }}
+              >
+                View DB Table
+              </button>
+            </div>
+
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: 10,
+                background: "white",
+                border: "1px solid #e2e8f0",
+              }}
+            >
+              <thead>
+                <tr>
+                  {(tableView === "graph"
+                    ? ["Slug", "Type", "Coords"]
+                    : ["Slug", "Category", "Aliases"]
+                  ).map((h) => (
+                    <th
+                      key={h}
+                      style={{
+                        padding: 6,
+                        borderBottom: "1px solid #e2e8f0",
+                        textAlign: "left",
+                        background: "#f8fafc",
+                      }}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {vertices.slice(0, 50).map((v) => (
+                  <tr
+                    key={v.id}
+                    onClick={(e) => handleRowClick(e as any, v)}
+                    style={{
+                      background: selectedIds.includes(v.id)
+                        ? "#fef9c3"
+                        : "white",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <td style={{ ...TD, maxWidth: 80 }} title={v.slug}>
+                      {v.slug}
+                    </td>
+                    {tableView === "graph" ? (
+                      <>
+                        <td style={TD}>{v.type}</td>
+                        <td style={TD}>
+                          {v.cx},{v.cy}
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td style={TD}>{v["room-type"] || "—"}</td>
+                        <td style={TD}>{v.aliases || "—"}</td>
+                      </>
                     )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Export buttons */}
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={exportGraph} style={{ flex: 1, padding: '10px 8px', background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 11, fontFamily: 'inherit', boxShadow: '0 2px 8px rgba(34,197,94,0.3)' }}>
-                📊 Export Graph JSON
-              </button>
-              <button onClick={exportDB} style={{ flex: 1, padding: '10px 8px', background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 11, fontFamily: 'inherit', boxShadow: '0 2px 8px rgba(139,92,246,0.3)' }}>
-                🗄️ Export DB JSON
-              </button>
-            </div>
-
-            {/* Legend */}
-            <div style={{ marginTop: 14, padding: '10px 12px', background: 'white', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Legend</div>
-              <div style={{ display: 'flex', gap: 16, fontSize: 11, color: '#475569' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <svg width={14} height={14}><circle cx={7} cy={7} r={6} fill="#ef4444" stroke="white" strokeWidth={1.5} /></svg>
-                  Room ({roomCount})
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <svg width={14} height={14}><circle cx={7} cy={7} r={5} fill="#3b82f6" stroke="white" strokeWidth={1.5} /></svg>
-                  Junction ({junctCount})
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <svg width={14} height={14}><circle cx={7} cy={7} r={6} fill="#ef4444" stroke="#fbbf24" strokeWidth={2.5} /></svg>
-                  Selected
-                </div>
-              </div>
-            </div>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // ─────────────────────────────────────────────
 // APP ROOT
 // ─────────────────────────────────────────────
-
 export default function App() {
-  const [currentUser, setCurrentUser] = useState<string | null>(() => getSession())
+  const [currentUser, setCurrentUser] = useState<string | null>(() =>
+    getSession(),
+  );
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
 
-  function handleLogin(u: string) { setSession(u); setCurrentUser(u) }
-  function handleLogout() { clearSession(); setCurrentUser(null) }
+  function handleLogin(u: string) {
+    setSession(u);
+    setCurrentUser(u);
+  }
+  function handleLogout() {
+    clearSession();
+    setCurrentUser(null);
+    setCurrentProjectId(null);
+  }
 
-  if (!currentUser) return <AuthScreen onLogin={handleLogin} />
-  return <FloorplanMapper user={currentUser} onLogout={handleLogout} />
+  if (!currentUser) return <AuthScreen onLogin={handleLogin} />;
+  if (!currentProjectId)
+    return (
+      <ProjectSelectionScreen
+        user={currentUser}
+        onSelectProject={setCurrentProjectId}
+        onLogout={handleLogout}
+      />
+    );
+  return (
+    <FloorplanMapper
+      user={currentUser}
+      projectId={currentProjectId}
+      onBack={() => setCurrentProjectId(null)}
+    />
+  );
 }

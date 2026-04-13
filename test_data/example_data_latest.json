@@ -1,0 +1,881 @@
+{
+  "_id": {
+    "$oid": "69cc0db582d3187891a11f9c"
+  },
+  "id": "7f88ca01-ac67-4926-aad1-fde3db7af721",
+  "name": "SHLV LT 1",
+  "ownerId": "15d4a51f-b94b-41c6-ba6f-7c90bff01e1f",
+  "svgUrl": "http://localhost:8080/data/7f88ca01-ac67-4926-aad1-fde3db7af721.svg",
+  "canvasW": 1122.6667,
+  "canvasH": 793.33331,
+  "createdAt": {
+    "$date": "2026-03-31T18:08:53.383Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-01T09:59:25.530Z"
+  },
+  "__v": 16,
+  "rooms": [
+    {
+      "id": "f12a668f-953d-4184-af79-de0b768d2ecd",
+      "slug": "lt1-pharmacy-farmasi",
+      "label": "Pharmacy / Farmasi",
+      "floor": "1",
+      "wings": "West",
+      "room-type": "PHARMACY",
+      "keywords": "obat, resep dokter, apoteker, beli obat, nebus obat, obat jalan, obat inap, kasir obat, apotek rumah sakit, farmasi klinis, pharmacy, medicine, drugs, prescription, pharmacist, clinical pharmacy",
+      "aliases": "apotek, farmasi, tebus resep, beli obat, ambil obat, apotik, pharmacy, dispensary",
+      "description_id": "Fasilitas pelayanan farmasi klinis rumah sakit untuk penyerahan, peracikan, dan pengambilan obat atau tebus resep dokter bagi pasien.",
+      "description_en": "Clinical pharmacy service facility for dispensing, compounding, and collecting medicines or prescriptions for patients."
+    },
+    {
+      "id": "8f95207c-3db0-4eb5-99c5-43299048037e",
+      "slug": "lt1-therapy-ward",
+      "label": "Therapy Ward",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "CLINIC",
+      "keywords": "rawat inap terapi, pemulihan, bangsal perawatan, observasi terapi, rehabilitasi, ranjang terapi, kamar pasien, bed ward, inpatient therapy, recovery, observation, rehabilitation ward, patient room",
+      "aliases": "bangsal terapi, ruang terapi, rawat terapi, ward terapi, kamar terapi, therapy ward, recovery room",
+      "description_id": "Bangsal atau ruang perawatan khusus yang dilengkapi tempat tidur untuk observasi dan pemulihan pasien yang sedang menjalani program terapi medis.",
+      "description_en": "Special ward equipped with beds for observation and recovery of patients undergoing medical therapy programs."
+    },
+    {
+      "id": "e93d6e5f-7bbd-4470-87d3-2dd6e907f956",
+      "slug": "lt1-medical-rehab",
+      "label": "Medical Rehab",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "CLINIC",
+      "keywords": "rehabilitasi medik, pemulihan fisik, cedera, pasca operasi, stroke, latihan fisik, dokter rehab, klinik fisioterapi, medical rehabilitation, physical recovery, post-surgery, stroke recovery, physiotherapy clinic",
+      "aliases": "rehab medik, rehabilitasi medis, fisioterapi, terapi fisik, ruang rehab, physiotherapy, physical therapy",
+      "description_id": "Pusat fasilitas pelayanan rehabilitasi medis terpadu dan fisioterapi untuk membantu pemulihan fungsi fisik dan motorik pasien pasca cedera atau operasi.",
+      "description_en": "Integrated medical rehabilitation and physiotherapy center to help patients recover physical and motor functions post-injury or surgery."
+    },
+    {
+      "id": "c27ba4a3-ddc5-4f27-8238-f510077e0e18",
+      "slug": "lt1-terrace",
+      "label": "Terrace",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "PUBLIC",
+      "keywords": "tempat tunggu luar, smoking area, udara segar, tempat duduk outdoor, istirahat, angin, terrace, outdoor seating, waiting area, fresh air",
+      "aliases": "teras, area terbuka, luar ruangan, balkon, outdoor, tempat santai, balcony, patio",
+      "description_id": "Teras atau area terbuka di luar ruangan yang difungsikan sebagai ruang santai, tempat menunggu, atau area istirahat bagi pengunjung dan keluarga pasien.",
+      "description_en": "Outdoor terrace functioning as a relaxation area, waiting space, or rest area for visitors and patients' families."
+    },
+    {
+      "id": "808b2ea6-5153-4a6d-ab98-d81bffde0b0b",
+      "slug": "lt1-terrace-2",
+      "label": "Terrace",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "PUBLIC",
+      "keywords": "tempat tunggu luar, smoking area, udara segar, tempat duduk outdoor, istirahat, angin, teras dua, secondary terrace, outdoor waiting area",
+      "aliases": "teras, area terbuka, luar ruangan, balkon, outdoor, tempat santai, balcony, patio",
+      "description_id": "Teras kedua atau area terbuka luar ruangan tambahan untuk memfasilitasi tempat bersantai dan ruang tunggu ekstra bagi pengunjung.",
+      "description_en": "Secondary outdoor terrace providing additional relaxation and waiting space for visitors."
+    },
+    {
+      "id": "652c12af-6340-44fd-a476-07e0ed83796d",
+      "slug": "lt1-admission-medical-rehab",
+      "label": "Admission Medical Rehab",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "ADMIN",
+      "keywords": "pendaftaran pasien rehab, loket administrasi, pendaftaran bpjs rehab, registrasi ulang fisioterapi, jadwal terapi, kasir rehab, admission, rehab registration, physiotherapy booking, medical admin",
+      "aliases": "pendaftaran rehab, daftar fisioterapi, registrasi rehab, loket rehab medik, daftar medik, admin rehab, rehab reception",
+      "description_id": "Meja layanan administrasi dan admission khusus untuk pendaftaran, penjadwalan, dan pendataan pasien yang akan menjalani sesi rehabilitasi medis atau fisioterapi.",
+      "description_en": "Administration and admission desk specifically for registering, scheduling, and recording patients for medical rehabilitation or physiotherapy sessions."
+    },
+    {
+      "id": "ad84fef8-2007-4ed3-b539-e1ebb572b9ac",
+      "slug": "lt1-vitalstim-therapy",
+      "label": "Vitalstim Therapy",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "CLINIC",
+      "keywords": "disfagia, susah menelan, stimulasi elektrik, terapi saraf, gangguan menelan, alat vitalstim, terapi otot leher, vitalstim therapy, dysphagia, swallowing disorder, neuromuscular electrical stimulation",
+      "aliases": "terapi vitalstim, terapi otot, stimulasi otot, vitalstim, fisioterapi otot, terapi menelan, muscle stimulation therapy",
+      "description_id": "Ruang tindakan medis spesifik untuk terapi VitalStim, menggunakan stimulasi listrik neuromuskular guna mengobati pasien dengan gangguan menelan and memperkuat otot.",
+      "description_en": "Specific medical room for VitalStim therapy, using neuromuscular electrical stimulation to treat patients with swallowing disorders and strengthen muscles."
+    },
+    {
+      "id": "97304386-3d5a-455c-acc1-0446e32c8fec",
+      "slug": "lt1-vip-therapy",
+      "label": "VIP Therapy",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "CLINIC",
+      "keywords": "layanan prioritas, terapi privat, rehabilitasi eksklusif, ruang terapi pribadi, fisioterapi khusus, layanan vip, vip therapy, private rehabilitation, premium physiotherapy, exclusive care",
+      "aliases": "terapi vip, ruang terapi vip, fisioterapi vip, rehab vip, terapi eksklusif, klinik vip, premium therapy",
+      "description_id": "Ruang layanan terapi fisik dan rehabilitasi eksklusif yang menawarkan privasi dan kenyamanan lebih bagi pasien VIP yang membutuhkan perawatan intensif pribadi.",
+      "description_en": "Exclusive physical therapy and rehabilitation room offering enhanced privacy and comfort for VIP patients requiring personalized intensive care."
+    },
+    {
+      "id": "49deb241-de3d-425e-bd6d-7fa4db067b28",
+      "slug": "lt1-sensory-integration",
+      "label": "Sensory Integration",
+      "floor": "1",
+      "wings": "East",
+      "room-type": "CLINIC",
+      "keywords": "autisme, adhd, tumbuh kembang anak, terapi bermain, motorik halus, motorik kasar, stimulasi sensorik, klinik anak, sensory integration, autism therapy, child development, motor skills, sensory stimulation",
+      "aliases": "integrasi sensori, terapi sensori, terapi anak, sensorik, motorik anak, ruang sensori, sensory therapy room",
+      "description_id": "Ruang terapi integrasi sensori yang dirancang khusus dengan alat stimulasi untuk mendukung perkembangan motorik dan sensorik anak berkebutuhan khusus.",
+      "description_en": "Sensory integration therapy room equipped with stimulation tools to support motor and sensory development in children with special needs."
+    },
+    {
+      "id": "28242de1-7c31-4a00-bb68-b8ac50edd368",
+      "slug": "lt1-occupasional-therapy",
+      "label": "Occupasional Therapy",
+      "floor": "1",
+      "wings": "East",
+      "room-type": "CLINIC",
+      "keywords": "kemandirian pasien, aktivitas sehari-hari, rehabilitasi kerja, latihan tangan, pemulihan fungsi kognitif, occupational therapy, daily living activities, ADL, cognitive recovery, motor skills training",
+      "aliases": "terapi okupasi, okupasi, latihan motorik, occupational, occupational therapy, klinik okupasi",
+      "description_id": "Ruang tindakan untuk layanan terapi okupasi yang berfokus pada pemulihan kemampuan pasien agar dapat kembali melakukan aktivitas sehari-hari secara mandiri.",
+      "description_en": "Action room for occupational therapy focusing on restoring patients' abilities to perform daily living activities independently."
+    },
+    {
+      "id": "93e0a9e3-f08c-4b8b-983c-49e637060b7c",
+      "slug": "lt1-speech-occupasional-therapy",
+      "label": "Speech / Occupasional Therapy",
+      "floor": "1",
+      "wings": "East",
+      "room-type": "CLINIC",
+      "keywords": "gabungan terapi, kelancaran bicara, kemandirian anak, stroke recovery, terapi kognitif, motorik dan wicara, combined therapy, speech and occupational therapy, comprehensive rehab",
+      "aliases": "terapi wicara, terapi okupasi, bicara, motorik, speech, occupational, poli wicara, poli okupasi",
+      "description_id": "Ruang layanan terpadu yang menggabungkan fasilitas untuk terapi wicara dan terapi okupasi bagi pasien yang membutuhkan intervensi ganda.",
+      "description_en": "Integrated service room combining speech and occupational therapy facilities for patients requiring dual-intervention."
+    },
+    {
+      "id": "d9598562-c36c-4d70-81fc-48de72ef84fc",
+      "slug": "lt1-speech-therapy",
+      "label": "Speech Therapy",
+      "floor": "1",
+      "wings": "East",
+      "room-type": "CLINIC",
+      "keywords": "telat bicara, speech delay, gagap, pasca stroke, gangguan komunikasi, artikulasi, afasia, speech therapy, stuttering, aphasia, communication disorder, articulation",
+      "aliases": "terapi wicara, latihan bicara, poli wicara, speech clinic, terapi ngomong, klinik wicara",
+      "description_id": "Ruang khusus tindakan medis untuk terapi wicara, membantu pasien dalam mengatasi gangguan komunikasi, artikulasi, bahasa, dan kesulitan berbicara.",
+      "description_en": "Dedicated medical room for speech therapy, assisting patients with communication, articulation, language, and speaking difficulties."
+    },
+    {
+      "id": "8e5074d8-b0e3-4aa8-8a03-16a11c87e74e",
+      "slug": "lt1-nebulizer-room",
+      "label": "Nebulizer Room",
+      "floor": "1",
+      "wings": "East",
+      "room-type": "CLINIC",
+      "keywords": "uap asma, batuk pilek, gangguan pernafasan, inhaler, lendir, dahak, paru-paru, pernapasan anak, nebulizer room, steam therapy, asthma, respiratory disorder, inhalation",
+      "aliases": "ruang uap, nebulizer, terapi uap, asma, sesak napas, inhalasi, poli uap, inhalation room",
+      "description_id": "Ruang perawatan yang menyediakan terapi inhalasi atau uap (Nebulizer) untuk pasien yang mengalami gangguan pernapasan seperti asma atau penumpukan lendir.",
+      "description_en": "Treatment room providing inhalation or steam therapy (Nebulizer) for patients with respiratory disorders such as asthma or mucus buildup."
+    },
+    {
+      "id": "8cb2ecde-3b17-4b2d-8627-17f54e028103",
+      "slug": "lt1-op",
+      "label": "OP",
+      "floor": "1",
+      "wings": "East",
+      "room-type": "CLINIC",
+      "keywords": "bedah minor, operasi ringan, poli bedah jalan, jahit luka, cabut kuku, tindakan medis ringan, outpatient, minor surgery, minor procedure, medical intervention",
+      "aliases": "op, operasi kecil, outpatient, rawat jalan, tindakan op, ruang tindakan, minor surgery room",
+      "description_id": "Ruang tindakan Outpatient (OP) yang difungsikan untuk melakukan prosedur operasi kecil atau tindakan medis ringan tanpa rawat inap.",
+      "description_en": "Outpatient (OP) procedure room used for minor surgeries or light medical interventions without hospitalization."
+    },
+    {
+      "id": "f6c68b4b-0e3a-426c-8673-bbf02083a140",
+      "slug": "lt1-cu",
+      "label": "CU",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "CLINIC",
+      "keywords": "pemantauan intensif, ruang observasi, perawatan darurat, monitor pasien, recovery room sementara, care unit, intensive monitoring, observation room, medical supervision",
+      "aliases": "cu, ruang cu, care unit, unit perawatan, observasi, ruang rawat sementara",
+      "description_id": "Ruang Care Unit (CU) untuk perawatan, observasi medis, dan pemantauan ketat kondisi pasien sebelum dipindahkan atau diizinkan pulang.",
+      "description_en": "Care Unit (CU) room for treatment, medical observation, and strict monitoring of patients before transfer or discharge."
+    },
+    {
+      "id": "b3b2bc2e-ead9-4f76-9134-9b14ecee7f0e",
+      "slug": "lt1-stair",
+      "label": "Stair",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "CIRCULATION",
+      "keywords": "tangga manual, akses darurat, evakuasi, jalan naik, jalan turun, penghubung lantai, stair, stairs, emergency exit, staircase, fire exit",
+      "aliases": "tangga, tangga darurat, stair, turun, naik, tangga biasa",
+      "description_id": "Fasilitas tangga akses utama maupun darurat untuk sirkulasi dan perpindahan pengunjung atau staf antar lantai.",
+      "description_en": "Primary and emergency stair access for circulation and movement of visitors or staff between floors."
+    },
+    {
+      "id": "cd35bd2a-d2e9-4924-a5ff-5a75aaa03ed9",
+      "slug": "lt1-mushola",
+      "label": "Mushola",
+      "floor": "1",
+      "wings": "North",
+      "room-type": "PUBLIC",
+      "keywords": "tempat wudhu, mukena, sajadah, jamaah, waktu sholat, ibadah muslim, ruang doa, prayer room, mosque, islamic prayer, worship room",
+      "aliases": "mushola, masjid, ruang sholat, ibadah, shalat, pray room, musholla, surau",
+      "description_id": "Fasilitas tempat ibadah (Mushola) untuk pengunjung, keluarga pasien, dan staf rumah sakit menunaikan sholat, lengkap dengan area wudhu.",
+      "description_en": "Islamic prayer room (Mushola) for visitors, patients' families, and staff, complete with an ablution area."
+    },
+    {
+      "id": "664b7368-567a-4344-b19d-e6d8a695686a",
+      "slug": "lt1-toilet",
+      "label": "Toilet",
+      "floor": "1",
+      "wings": "West",
+      "room-type": "TOILET",
+      "keywords": "buang air, cuci tangan, wastafel, urinoir, kloset, fasilitas kebersihan, wc umum, kamar kecil, toilet, restroom, washroom, lavatory, water closet",
+      "aliases": "toilet rehab, wc rehab, kamar mandi, restroom, washroom, lavatory, wc",
+      "description_id": "Fasilitas sanitasi dan toilet umum yang terletak strategis di dekat area Medical Rehab.",
+      "description_en": "Public sanitation and toilet facilities strategically located near the Medical Rehab area."
+    },
+    {
+      "id": "8d907128-1649-4645-906a-016ea129f541",
+      "slug": "lt1-bed-lift-lobby",
+      "label": "Bed Lift Lobby",
+      "floor": "1",
+      "wings": "West",
+      "room-type": "CIRCULATION",
+      "keywords": "transfer pasien, dorong ranjang, evakuasi pasien, lift medis, ruang tunggu lift pasien, brankar, bed lift lobby, patient transfer, medical elevator, stretcher lift",
+      "aliases": "lift ranjang, lift pasien, bed lift, lift barang, tunggu lift, elevator ranjang, lobi lift medis",
+      "description_id": "Area tunggu dan akses sirkulasi khusus untuk Bed Lift, digunakan oleh tenaga medis mentransfer pasien dengan brankar antar lantai.",
+      "description_en": "Waiting area and specific circulation access for the Bed Lift, used by medical staff to transfer patients on stretchers between floors."
+    },
+    {
+      "id": "a6336d0d-c78d-44c0-b0c9-5385525e3890",
+      "slug": "lt1-koperasi",
+      "label": "Koperasi",
+      "floor": "1",
+      "wings": "South",
+      "room-type": "SERVICE",
+      "keywords": "beli makanan, minuman, snack, alat mandi, kebutuhan pasien, belanja harian, toko rumah sakit, convenience store, minimart, hospital shop, daily needs",
+      "aliases": "minimarket, toko, beli barang, warung, koperasi karyawan, mart, kantin kecil",
+      "description_id": "Toko atau koperasi di area lobi utama yang menyediakan makanan ringan, minuman, and kebutuhan dasar pasien.",
+      "description_en": "Shop or cooperative in the main lobby providing snacks, beverages, and basic patient needs."
+    },
+    {
+      "id": "a343d831-3720-4f9e-9169-dd218092a1b8",
+      "slug": "lt1-lift-main-lobby",
+      "label": "Lift Main Lobby",
+      "floor": "1",
+      "wings": "South",
+      "room-type": "CIRCULATION",
+      "keywords": "akses lantai, lift pengunjung, elevator umum, lobi utama, tombol lift, naik turun, main lobby lift, passenger elevator, vertical transport",
+      "aliases": "lift utama, lift lobi, lift depan, elevator, naik, turun, passenger lift, lift umum",
+      "description_id": "Fasilitas lift penumpang umum yang berlokasi di Main Lobby, melayani mobilitas pengunjung dan staf.",
+      "description_en": "General passenger elevator facility located in the Main Lobby, serving the mobility of visitors and staff."
+    },
+    {
+      "id": "ab30ca6a-8a9d-440c-bc7b-cab622a7da35",
+      "slug": "lt1-stair-2",
+      "label": "Stair",
+      "floor": "1",
+      "wings": "West",
+      "room-type": "CIRCULATION",
+      "keywords": "tangga manual, akses darurat, evakuasi, jalan naik, jalan turun, penghubung lantai, tangga tambahan, stair, stairs, emergency exit, secondary staircase",
+      "aliases": "tangga, tangga darurat, stair, turun, naik, tangga biasa, tangga 2",
+      "description_id": "Fasilitas tangga sirkulasi tambahan yang digunakan sebagai akses alternatif atau jalur evakuasi antar lantai.",
+      "description_en": "Additional circulation stair facility used as alternative access or evacuation route between floors."
+    },
+    {
+      "id": "d556b9c0-d3d4-44f9-aeae-03e200455812",
+      "slug": "f1-wsouth-laboratory-d556",
+      "label": "Laboratory",
+      "floor": "1",
+      "wings": "South",
+      "room-type": "SERVICE",
+      "keywords": "",
+      "aliases": "",
+      "description_id": "Laboratorium patologi, mikrobiologi, dan bank darah",
+      "description_en": ""
+    },
+    {
+      "id": "v68",
+      "slug": "f1-wsouth-library-v68",
+      "label": "Library",
+      "floor": "1",
+      "wings": "South",
+      "room-type": "PUBLIC",
+      "keywords": "referensi medis, jurnal kedokteran, pinjam buku, tempat belajar, riset dokter, literatur kesehatan, library, reading room, medical literature, journals, study room",
+      "aliases": "perpustakaan, ruang baca, buku, baca buku, library, perpustakaan medis, arsip medis",
+      "description_id": "Fasilitas perpustakaan dan ruang baca yang menyimpan koleksi literatur dan jurnal medis untuk dokter maupun mahasiswa.",
+      "description_en": "Library and reading room facility housing a collection of medical literature and journals for doctors and students."
+    },
+    {
+      "id": "2243e42a-80f3-4315-a7b8-c71d42c2271a",
+      "slug": "lt1-photo-copy",
+      "label": "Photo Copy",
+      "floor": "1",
+      "wings": "South",
+      "room-type": "SERVICE",
+      "keywords": "cetak ktp, fotokopi berkas, print dokumen bpjs, jilid, administrasi pendaftaran, copy data, photocopy, printing service, copy center, document duplication",
+      "aliases": "fotokopi, fotocopy, print, cetak dokumen, copy center, fotocopy center, tukang fotocopy",
+      "description_id": "Layanan jasa fotokopi, percetakan, dan penggandaan dokumen di lobi utama untuk keperluan administrasi.",
+      "description_en": "Photocopying, printing, and document duplication services in the main lobby for administrative purposes."
+    },
+    {
+      "id": "85629f24-5acd-4d4c-b595-80c722e19f65",
+      "slug": "lt1-female-change-room",
+      "label": "Female Change Room",
+      "floor": "1",
+      "wings": "South",
+      "room-type": "SERVICE",
+      "keywords": "ganti seragam, loker staf, ruang karyawan wanita, simpan tas, ruang privasi staf, female change room, locker room, staff fitting room, ladies changing room",
+      "aliases": "ruang ganti wanita, ganti baju, loker wanita, fitting room, locker room, ruang ganti perawat",
+      "description_id": "Ruang ganti pakaian dan area loker yang mengutamakan privasi khusus untuk staf wanita atau perawat.",
+      "description_en": "Clothing change room and locker area prioritizing privacy specifically for female staff or nurses."
+    },
+    {
+      "id": "59bf26cd-a99b-4a30-9515-935522f517ad",
+      "slug": "lt1-store-2",
+      "label": "Store 2",
+      "floor": "1",
+      "wings": "South",
+      "room-type": "SERVICE",
+      "keywords": "simpan logistik, stok alat kesehatan, inventaris, gudang farmasi tambahan, ruang barang, store, storage room, warehouse, medical supplies storage, inventory",
+      "aliases": "gudang 2, ruang penyimpanan, storage 2, simpan barang, gudang internal, gudang logistik",
+      "description_id": "Ruang gudang (Store 2) untuk keperluan penyimpanan logistik internal, cadangan alat kesehatan, atau barang operasional rumah sakit agar tertata dengan rapi dan aman.",
+      "description_en": "Warehouse room (Store 2) for internal logistics storage, reserve medical equipment, or hospital operational goods to keep them organized and safe."
+    }
+  ],
+  "graph": [
+    {
+      "id": "j1",
+      "type": "junction",
+      "connection": ["j2", "j30", "2243e42a-80f3-4315-a7b8-c71d42c2271a"],
+      "cx": 659,
+      "cy": 403
+    },
+    {
+      "id": "j2",
+      "type": "junction",
+      "connection": ["j1", "j3"],
+      "cx": 640,
+      "cy": 406
+    },
+    {
+      "id": "j3",
+      "type": "junction",
+      "connection": ["j2", "j4", "8d907128-1649-4645-906a-016ea129f541"],
+      "cx": 612,
+      "cy": 407
+    },
+    {
+      "id": "j4",
+      "type": "junction",
+      "connection": ["j3", "j5", "j8"],
+      "cx": 583,
+      "cy": 407
+    },
+    {
+      "id": "j5",
+      "type": "junction",
+      "connection": ["j4", "j6"],
+      "cx": 582,
+      "cy": 434
+    },
+    {
+      "id": "j6",
+      "type": "junction",
+      "connection": ["j5", "j7"],
+      "cx": 581,
+      "cy": 461
+    },
+    {
+      "id": "j7",
+      "type": "junction",
+      "connection": [
+        "j6",
+        "j20",
+        "j27",
+        "d556b9c0-d3d4-44f9-aeae-03e200455812"
+      ],
+      "cx": 583,
+      "cy": 488
+    },
+    {
+      "id": "j8",
+      "type": "junction",
+      "connection": ["j4", "j9", "j19"],
+      "cx": 583,
+      "cy": 380
+    },
+    {
+      "id": "j9",
+      "type": "junction",
+      "connection": ["j8", "j10", "f12a668f-953d-4184-af79-de0b768d2ecd"],
+      "cx": 585,
+      "cy": 354
+    },
+    {
+      "id": "j10",
+      "type": "junction",
+      "connection": ["j9", "j11", "664b7368-567a-4344-b19d-e6d8a695686a"],
+      "cx": 585,
+      "cy": 319
+    },
+    {
+      "id": "j11",
+      "type": "junction",
+      "connection": ["j10", "j12"],
+      "cx": 585,
+      "cy": 278
+    },
+    {
+      "id": "j12",
+      "type": "junction",
+      "connection": ["j11", "j13"],
+      "cx": 585,
+      "cy": 245
+    },
+    {
+      "id": "j13",
+      "type": "junction",
+      "connection": ["j12", "j14"],
+      "cx": 586,
+      "cy": 213
+    },
+    {
+      "id": "j14",
+      "type": "junction",
+      "connection": ["j13", "j15"],
+      "cx": 586,
+      "cy": 181
+    },
+    {
+      "id": "j15",
+      "type": "junction",
+      "connection": ["j14", "j16"],
+      "cx": 641,
+      "cy": 181
+    },
+    {
+      "id": "j16",
+      "type": "junction",
+      "connection": ["j15", "j17", "cd35bd2a-d2e9-4924-a5ff-5a75aaa03ed9"],
+      "cx": 642,
+      "cy": 122
+    },
+    {
+      "id": "j17",
+      "type": "junction",
+      "connection": ["j16", "b3b2bc2e-ead9-4f76-9134-9b14ecee7f0e"],
+      "cx": 642,
+      "cy": 92
+    },
+    {
+      "id": "f12a668f-953d-4184-af79-de0b768d2ecd",
+      "type": "room",
+      "connection": ["j9"],
+      "cx": 639,
+      "cy": 355
+    },
+    {
+      "id": "j19",
+      "type": "junction",
+      "connection": ["j8", "ab30ca6a-8a9d-440c-bc7b-cab622a7da35"],
+      "cx": 551,
+      "cy": 382
+    },
+    {
+      "id": "j20",
+      "type": "junction",
+      "connection": ["j7", "j21", "j63"],
+      "cx": 627,
+      "cy": 488
+    },
+    {
+      "id": "j21",
+      "type": "junction",
+      "connection": ["j20", "j22"],
+      "cx": 670,
+      "cy": 489
+    },
+    {
+      "id": "j22",
+      "type": "junction",
+      "connection": ["j21", "j23"],
+      "cx": 714,
+      "cy": 489
+    },
+    {
+      "id": "j23",
+      "type": "junction",
+      "connection": ["j22", "j24"],
+      "cx": 758,
+      "cy": 490
+    },
+    {
+      "id": "j24",
+      "type": "junction",
+      "connection": ["j23", "j25"],
+      "cx": 802,
+      "cy": 490
+    },
+    {
+      "id": "j25",
+      "type": "junction",
+      "connection": ["j24", "j26", "j70"],
+      "cx": 832,
+      "cy": 491
+    },
+    {
+      "id": "j26",
+      "type": "junction",
+      "connection": ["j25", "v68", "85629f24-5acd-4d4c-b595-80c722e19f65"],
+      "cx": 889,
+      "cy": 491
+    },
+    {
+      "id": "j27",
+      "type": "junction",
+      "connection": ["j7", "j28"],
+      "cx": 517,
+      "cy": 488
+    },
+    {
+      "id": "j28",
+      "type": "junction",
+      "connection": ["j27", "j29"],
+      "cx": 450,
+      "cy": 489
+    },
+    {
+      "id": "j29",
+      "type": "junction",
+      "connection": ["j28"],
+      "cx": 384,
+      "cy": 489
+    },
+    {
+      "id": "j30",
+      "type": "junction",
+      "connection": ["j1", "j31"],
+      "cx": 662,
+      "cy": 382
+    },
+    {
+      "id": "j31",
+      "type": "junction",
+      "connection": ["j30", "j32"],
+      "cx": 752,
+      "cy": 379
+    },
+    {
+      "id": "j32",
+      "type": "junction",
+      "connection": ["j31", "j33", "j55"],
+      "cx": 834,
+      "cy": 376
+    },
+    {
+      "id": "j33",
+      "type": "junction",
+      "connection": [
+        "j32",
+        "j34",
+        "28242de1-7c31-4a00-bb68-b8ac50edd368",
+        "93e0a9e3-f08c-4b8b-983c-49e637060b7c",
+        "d9598562-c36c-4d70-81fc-48de72ef84fc"
+      ],
+      "cx": 833,
+      "cy": 325
+    },
+    {
+      "id": "j34",
+      "type": "junction",
+      "connection": ["j33", "j35", "j44"],
+      "cx": 832,
+      "cy": 271
+    },
+    {
+      "id": "j35",
+      "type": "junction",
+      "connection": ["j34", "8f95207c-3db0-4eb5-99c5-43299048037e"],
+      "cx": 805,
+      "cy": 269
+    },
+    {
+      "id": "8f95207c-3db0-4eb5-99c5-43299048037e",
+      "type": "room",
+      "connection": [
+        "j35",
+        "j37",
+        "ad84fef8-2007-4ed3-b539-e1ebb572b9ac",
+        "97304386-3d5a-455c-acc1-0446e32c8fec"
+      ],
+      "cx": 805,
+      "cy": 238
+    },
+    {
+      "id": "j37",
+      "type": "junction",
+      "connection": ["8f95207c-3db0-4eb5-99c5-43299048037e", "j38"],
+      "cx": 805,
+      "cy": 193
+    },
+    {
+      "id": "j38",
+      "type": "junction",
+      "connection": ["j37", "j39"],
+      "cx": 806,
+      "cy": 123
+    },
+    {
+      "id": "j39",
+      "type": "junction",
+      "connection": ["j38", "e93d6e5f-7bbd-4470-87d3-2dd6e907f956"],
+      "cx": 814,
+      "cy": 80
+    },
+    {
+      "id": "e93d6e5f-7bbd-4470-87d3-2dd6e907f956",
+      "type": "room",
+      "connection": [
+        "j39",
+        "j41",
+        "c27ba4a3-ddc5-4f27-8238-f510077e0e18",
+        "808b2ea6-5153-4a6d-ab98-d81bffde0b0b",
+        "652c12af-6340-44fd-a476-07e0ed83796d",
+        "f6c68b4b-0e3a-426c-8673-bbf02083a140"
+      ],
+      "cx": 849,
+      "cy": 81
+    },
+    {
+      "id": "j41",
+      "type": "junction",
+      "connection": ["e93d6e5f-7bbd-4470-87d3-2dd6e907f956", "j42"],
+      "cx": 849,
+      "cy": 129
+    },
+    {
+      "id": "j42",
+      "type": "junction",
+      "connection": ["j41", "j43"],
+      "cx": 852,
+      "cy": 177
+    },
+    {
+      "id": "j43",
+      "type": "junction",
+      "connection": ["j42", "j44"],
+      "cx": 854,
+      "cy": 224
+    },
+    {
+      "id": "j44",
+      "type": "junction",
+      "connection": ["j34", "j43", "j50"],
+      "cx": 854,
+      "cy": 268
+    },
+    {
+      "id": "c27ba4a3-ddc5-4f27-8238-f510077e0e18",
+      "type": "room",
+      "connection": ["e93d6e5f-7bbd-4470-87d3-2dd6e907f956"],
+      "cx": 885,
+      "cy": 99
+    },
+    {
+      "id": "808b2ea6-5153-4a6d-ab98-d81bffde0b0b",
+      "type": "room",
+      "connection": ["e93d6e5f-7bbd-4470-87d3-2dd6e907f956"],
+      "cx": 848,
+      "cy": 60
+    },
+    {
+      "id": "652c12af-6340-44fd-a476-07e0ed83796d",
+      "type": "room",
+      "connection": ["e93d6e5f-7bbd-4470-87d3-2dd6e907f956"],
+      "cx": 830,
+      "cy": 94
+    },
+    {
+      "id": "ad84fef8-2007-4ed3-b539-e1ebb572b9ac",
+      "type": "room",
+      "connection": ["8f95207c-3db0-4eb5-99c5-43299048037e"],
+      "cx": 782,
+      "cy": 236
+    },
+    {
+      "id": "97304386-3d5a-455c-acc1-0446e32c8fec",
+      "type": "room",
+      "connection": ["8f95207c-3db0-4eb5-99c5-43299048037e"],
+      "cx": 783,
+      "cy": 255
+    },
+    {
+      "id": "j50",
+      "type": "junction",
+      "connection": ["j44", "49deb241-de3d-425e-bd6d-7fa4db067b28"],
+      "cx": 887,
+      "cy": 269
+    },
+    {
+      "id": "49deb241-de3d-425e-bd6d-7fa4db067b28",
+      "type": "room",
+      "connection": ["j50"],
+      "cx": 889,
+      "cy": 302
+    },
+    {
+      "id": "28242de1-7c31-4a00-bb68-b8ac50edd368",
+      "type": "room",
+      "connection": ["j33"],
+      "cx": 858,
+      "cy": 293
+    },
+    {
+      "id": "93e0a9e3-f08c-4b8b-983c-49e637060b7c",
+      "type": "room",
+      "connection": ["j33"],
+      "cx": 859,
+      "cy": 314
+    },
+    {
+      "id": "d9598562-c36c-4d70-81fc-48de72ef84fc",
+      "type": "room",
+      "connection": ["j33"],
+      "cx": 859,
+      "cy": 338
+    },
+    {
+      "id": "j55",
+      "type": "junction",
+      "connection": [
+        "j32",
+        "8e5074d8-b0e3-4aa8-8a03-16a11c87e74e",
+        "8cb2ecde-3b17-4b2d-8627-17f54e028103"
+      ],
+      "cx": 864,
+      "cy": 356
+    },
+    {
+      "id": "8e5074d8-b0e3-4aa8-8a03-16a11c87e74e",
+      "type": "room",
+      "connection": ["j55"],
+      "cx": 890,
+      "cy": 358
+    },
+    {
+      "id": "8cb2ecde-3b17-4b2d-8627-17f54e028103",
+      "type": "room",
+      "connection": ["j55"],
+      "cx": 864,
+      "cy": 380
+    },
+    {
+      "id": "f6c68b4b-0e3a-426c-8673-bbf02083a140",
+      "type": "room",
+      "connection": ["e93d6e5f-7bbd-4470-87d3-2dd6e907f956"],
+      "cx": 834,
+      "cy": 113
+    },
+    {
+      "id": "b3b2bc2e-ead9-4f76-9134-9b14ecee7f0e",
+      "type": "room",
+      "connection": ["j17"],
+      "cx": 669,
+      "cy": 79
+    },
+    {
+      "id": "cd35bd2a-d2e9-4924-a5ff-5a75aaa03ed9",
+      "type": "room",
+      "connection": ["j16"],
+      "cx": 617,
+      "cy": 122
+    },
+    {
+      "id": "664b7368-567a-4344-b19d-e6d8a695686a",
+      "type": "room",
+      "connection": ["j10"],
+      "cx": 614,
+      "cy": 321
+    },
+    {
+      "id": "8d907128-1649-4645-906a-016ea129f541",
+      "type": "room",
+      "connection": ["j3"],
+      "cx": 612,
+      "cy": 380
+    },
+    {
+      "id": "j63",
+      "type": "junction",
+      "connection": [
+        "j20",
+        "a6336d0d-c78d-44c0-b0c9-5385525e3890",
+        "a343d831-3720-4f9e-9169-dd218092a1b8"
+      ],
+      "cx": 627,
+      "cy": 458
+    },
+    {
+      "id": "a6336d0d-c78d-44c0-b0c9-5385525e3890",
+      "type": "room",
+      "connection": ["j63"],
+      "cx": 671,
+      "cy": 459
+    },
+    {
+      "id": "a343d831-3720-4f9e-9169-dd218092a1b8",
+      "type": "room",
+      "connection": ["j63"],
+      "cx": 627,
+      "cy": 434
+    },
+    {
+      "id": "ab30ca6a-8a9d-440c-bc7b-cab622a7da35",
+      "type": "room",
+      "connection": ["j19"],
+      "cx": 525,
+      "cy": 381
+    },
+    {
+      "id": "d556b9c0-d3d4-44f9-aeae-03e200455812",
+      "type": "room",
+      "connection": ["j7"],
+      "cx": 582,
+      "cy": 529
+    },
+    {
+      "id": "v68",
+      "type": "room",
+      "connection": ["j26"],
+      "cx": 920,
+      "cy": 489
+    },
+    {
+      "id": "2243e42a-80f3-4315-a7b8-c71d42c2271a",
+      "type": "room",
+      "connection": ["j1"],
+      "cx": 675,
+      "cy": 403
+    },
+    {
+      "id": "j70",
+      "type": "junction",
+      "connection": ["j25", "59bf26cd-a99b-4a30-9515-935522f517ad"],
+      "cx": 831,
+      "cy": 554
+    },
+    {
+      "id": "85629f24-5acd-4d4c-b595-80c722e19f65",
+      "type": "room",
+      "connection": ["j26"],
+      "cx": 890,
+      "cy": 520
+    },
+    {
+      "id": "59bf26cd-a99b-4a30-9515-935522f517ad",
+      "type": "room",
+      "connection": ["j70"],
+      "cx": 843,
+      "cy": 564
+    }
+  ]
+}
